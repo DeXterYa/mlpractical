@@ -48,6 +48,22 @@ def get_args():
                         help='Weight decay to use for Adam')
     parser.add_argument('--filepath_to_arguments_json_file', nargs="?", type=str, default=None,
                         help='')
+    parser.add_argument('--growth_rate', nargs="?", type=int, default=12,
+                        help='')
+    parser.add_argument('--block_config', nargs="?", type=str, default=None,
+                        help='')
+    parser.add_argument('--compression', nargs="?", type=float, default=0.5,
+                        help='')
+    parser.add_argument('--num_init_feature', nargs="?", type=int, default=24,
+                        help='')
+    parser.add_argument('--bn_size', nargs="?", type=int, default=4,
+                        help='')
+    parser.add_argument('--drop_rate', nargs="?", type=float, default=0.0,
+                        help='')
+    parser.add_argument('--avgpool_size', nargs="?", type=int, default=8,
+                        help='')
+    parser.add_argument('--reduction', nargs="?", type=int, default=4,
+                        help='')
 
     args = parser.parse_args()
     gpu_id = str(args.gpu_id)

@@ -2,6 +2,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from collections import OrderedDict
+
 
 
 class FCCNetwork(nn.Module):
@@ -100,6 +102,8 @@ class ConvolutionalNetwork(nn.Module):
         self.layer_dict = nn.ModuleDict()
         # build the network
         self.build_module()
+        # SE_block parameter
+
 
     def build_module(self):
         """
@@ -111,6 +115,24 @@ class ConvolutionalNetwork(nn.Module):
         out = x
         # torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
         for i in range(self.num_layers):  # for number of layers times
+
+            # self.layer_dict['avg_pooling_{}'.format(i)] = nn.AdaptiveAvgPool2d(1) # use adaptiveavgpool2d to control the output of average pooling
+            # # b, c, _, _ = out.size()
+            # # out = self.layer_dict['avg_pooling_{}'.format(i)](out).view(b, c)
+            #
+            # self.layer_dict['fc_{}'.format(i)] = nn.Sequential(
+            #     nn.Linear(out.shape[1], out.shape[1] // self.se_reduction, bias=False),
+            #     nn.ReLU(inplace=True),
+            #     nn.Linear(out.shape[1] // self.se_reduction, out.shape[1], bias=False),
+            #     nn.Sigmoid()
+            # )
+
+            # out = self.layer_dict['fc_{}'.format(i)](out)
+            # out = out.view(b, c, 1, 1)
+
+            # comment out the steps above because the SE_block won't change the shape of out
+
+
             self.layer_dict['conv_{}'.format(i)] = nn.Conv2d(in_channels=out.shape[1],
                                                              # add a conv layer in the module dict
                                                              kernel_size=3,
@@ -206,3 +228,112 @@ class ConvolutionalNetwork(nn.Module):
                 pass
 
         self.logit_linear_layer.reset_parameters()
+
+
+class _SELayer(nn.Module):
+    def __init__(self, n_channels, reduction):
+        super(_SELayer, self).__init__()
+
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(n_channels, n_channels // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(n_channels // reduction, n_channels, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y)
+        y = y.view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
+
+class _DenseLayer(nn.Sequential):
+    def __init__(self, num_input_features, growth_rate, bn_size, drop_rate, reduction):
+        super(_DenseLayer, self).__init__()
+        self.add_module('norm_1', nn.BatchNorm2d(num_input_features)),
+        self.add_module('relu_1', nn.ReLU(inplace=True)),  # Modify the input directly
+        self.add_module('conv_1', nn.Conv2d(num_input_features, bn_size *
+                                            growth_rate, kernel_size=1, stride=1, bias=False)),
+
+        # in_channels, out_channels
+
+        self.add_module('norm_2', nn.BatchNorm2d(bn_size * growth_rate)),
+        self.add_module('relu_2', nn.ReLU(inplace=True)),
+        self.add_module('conv_2', nn.Conv2d(bn_size * growth_rate, growth_rate,
+                                            kernel_size=3, stride=1, padding=1, bias=False)),
+        self.drop_rate = drop_rate
+
+        se = _SELayer(n_channels=growth_rate, reduction=reduction)
+        self.add_module('se', se)
+
+    def forward(self, x):
+        new_features = super(_DenseLayer, self).forward(x)
+        if self.drop_rate > 0:
+            new_feature = F.dropout(new_features, p=self.drop_rate, training=self.training)
+        return torch.cat([x, new_features], 1)
+
+
+class _Transition(nn.Sequential):
+    def __init__(self, num_input_features, num_output_features):
+        super(_Transition, self).__init__()
+        self.add_module('norm', nn.BatchNorm2d(num_input_features))
+        self.add_module('relu', nn.ReLU(inplace=True))
+        self.add_module('conv', nn.Conv2d(num_input_features, num_output_features,
+                                         kernel_size=1, stride=1, bias=False))
+        self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
+
+class _DenseBlock(nn.Sequential):
+    def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate, reduction):
+        super(_DenseBlock, self).__init__()
+        for i in range(num_layers):
+            layer = _DenseLayer(num_input_features + i * growth_rate, growth_rate, bn_size, drop_rate, reduction)
+            self.add_module('denselayer%d' % (i + 1), layer)
+
+class DenseNet(nn.Module):
+    def __init__(self, growth_rate=12, block_config=(16,16,16), compression=0.5,
+                num_init_feature = 24, bn_size=4, drop_rate=0, avgpool_size=8, num_classes=10, reduction=1, image_num_channels=1):
+        super(DenseNet, self).__init__()
+        assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
+        self.avgpool_size = avgpool_size
+
+        # First Convolution
+        self.features = nn.Sequential(OrderedDict([
+            ('conv0', nn.Conv2d(image_num_channels, num_init_feature, kernel_size=3, stride=1, padding=1, bias=False)),
+        ]))
+
+        # Each denseblock
+
+        num_features = num_init_feature
+        for i, num_layers in enumerate(block_config):
+            block = _DenseBlock(num_layers=num_layers,
+                               num_input_features=num_features,
+                               bn_size=bn_size, growth_rate=growth_rate,
+                               drop_rate=drop_rate, reduction=reduction)
+            self.features.add_module('denseblock%d' % (i+1), block)
+            num_features = num_features + num_layers*growth_rate
+            if i != len(block_config) - 1:
+                trans = _Transition(num_input_features=num_features,
+                                   num_output_features=int(num_features*compression))
+                self.features.add_module('transition%d' % (i + 1), trans)
+                num_features = int(num_features * compression)
+
+        # Final batch norm
+        self.features.add_module('norm_final', nn.BatchNorm2d(num_features))
+
+        # Linear layer
+        self.classifier = nn.Linear(num_features, num_classes)
+
+    def forward(self, x):
+        features = self.features(x)
+        out = F.relu(features, inplace=True)
+        out = F.avg_pool2d(out, kernel_size=self.avgpool_size).view(
+                                        features.size(0), -1)
+        out = self.classifier(out)
+        return out
+
+
+
+

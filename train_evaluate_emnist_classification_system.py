@@ -3,6 +3,8 @@ import numpy as np
 from arg_extractor import get_args
 from experiment_builder import ExperimentBuilder
 from model_architectures import ConvolutionalNetwork
+from model_architectures import DenseNet
+from ast import literal_eval
 
 
 args, device = get_args()  # get arguments from command line
@@ -73,10 +75,16 @@ elif args.dataset_name == 'cifar100':
 
     num_output_classes = 100
 
-custom_conv_net = ConvolutionalNetwork(  # initialize our network object, in this case a ConvNet
-    input_shape=(args.batch_size, args.image_num_channels, args.image_height, args.image_height),
-    dim_reduction_type=args.dim_reduction_type, num_filters=args.num_filters, num_layers=args.num_layers, use_bias=False,
-    num_output_classes=num_output_classes)
+# custom_conv_net = ConvolutionalNetwork(  # initialize our network object, in this case a ConvNet
+#     input_shape=(args.batch_size, args.image_num_channels, args.image_height, args.image_height),
+#     dim_reduction_type=args.dim_reduction_type, num_filters=args.num_filters, num_layers=args.num_layers, use_bias=False,
+#     num_output_classes=num_output_classes)
+
+custom_conv_net = DenseNet(
+    growth_rate=args.growth_rate, block_config=literal_eval(args.block_config), compression=args.compression,
+    num_init_feature= args.num_init_feature, bn_size=args.bn_size, drop_rate=args.drop_rate, avgpool_size=args.avgpool_size,
+    num_classes=num_output_classes, reduction=args.reduction, image_num_channels=args.image_num_channels
+)
 
 conv_experiment = ExperimentBuilder(network_model=custom_conv_net,
                                     experiment_name=args.experiment_name,
@@ -86,4 +94,8 @@ conv_experiment = ExperimentBuilder(network_model=custom_conv_net,
                                     device=device,
                                     train_data=train_data, val_data=val_data,
                                     test_data=test_data)  # build an experiment object
+
+
+
+
 experiment_metrics, test_metrics = conv_experiment.run_experiment()  # run experiment and return experiment metrics
