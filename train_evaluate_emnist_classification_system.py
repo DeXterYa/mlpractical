@@ -79,13 +79,14 @@ elif args.dataset_name == 'cifar100':
 #     input_shape=(args.batch_size, args.image_num_channels, args.image_height, args.image_height),
 #     dim_reduction_type=args.dim_reduction_type, num_filters=args.num_filters, num_layers=args.num_layers, use_bias=False,
 #     num_output_classes=num_output_classes)
-
+import sys
+print('Building model', file=sys.stderr)
 custom_conv_net = DenseNet(
     growth_rate=args.growth_rate, block_config=literal_eval(args.block_config), compression=args.compression,
     num_init_feature= args.num_init_feature, bn_size=args.bn_size, drop_rate=args.drop_rate, avgpool_size=args.avgpool_size,
     num_classes=num_output_classes, reduction=args.reduction, image_num_channels=args.image_num_channels
 )
-
+print('Building experiment', file=sys.stderr)
 conv_experiment = ExperimentBuilder(network_model=custom_conv_net,
                                     experiment_name=args.experiment_name,
                                     num_epochs=args.num_epochs,
@@ -96,6 +97,6 @@ conv_experiment = ExperimentBuilder(network_model=custom_conv_net,
                                     test_data=test_data)  # build an experiment object
 
 
-
+print('after experiment builder', file=sys.stderr)
 
 experiment_metrics, test_metrics = conv_experiment.run_experiment()  # run experiment and return experiment metrics
