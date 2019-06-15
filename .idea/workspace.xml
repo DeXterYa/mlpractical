@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fcc1d3a1-96c2-423b-a5bf-e77bacaa4044" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/notes/cifar10_arg_parsing_densenet_se.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="27" column="34" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="34" />
+            <state relative-caret-position="471">
+              <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -26,19 +27,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/notes/emnist_arg_parsing_densenet_se.sh">
+        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="6" selection-start-line="6" selection-end-line="12" selection-end-column="113" />
+            <state relative-caret-position="180">
+              <caret line="9" column="98" selection-start-line="9" selection-start-column="98" selection-end-line="9" selection-end-column="98" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="716">
+              <caret line="41" column="98" selection-start-line="41" selection-start-column="98" selection-end-line="41" selection-end-column="98" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/notes/cifar10_arg_parsing_densenet_se.sh">
+        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="636">
-              <caret line="37" selection-start-line="37" selection-end-line="37" />
+            <state relative-caret-position="720">
+              <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -47,7 +57,7 @@
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="140">
-              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
             </state>
           </provider>
         </entry>
@@ -79,7 +89,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/experiment_builder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20">
+            <state relative-caret-position="480">
               <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
             </state>
           </provider>
@@ -88,7 +98,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_architectures.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-5343">
+            <state relative-caret-position="20">
               <caret line="5" selection-start-line="5" selection-end-line="5" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -148,12 +158,14 @@
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar100_standard_single_gpu_tutorial.sh" />
         <option value="$PROJECT_DIR$/local_experiment_scripts/cifar10_arg_parsing_template.sh" />
         <option value="$PROJECT_DIR$/local_experiment_scripts/cifar100_arg_parsing_template.sh" />
-        <option value="$PROJECT_DIR$/notes/emnist_arg_parsing_densenet_se.sh" />
         <option value="$PROJECT_DIR$/arg_extractor.py" />
         <option value="$PROJECT_DIR$/model_architectures.py" />
         <option value="$PROJECT_DIR$/experiment_builder.py" />
-        <option value="$PROJECT_DIR$/train_evaluate_emnist_classification_system.py" />
         <option value="$PROJECT_DIR$/notes/cifar10_arg_parsing_densenet_se.sh" />
+        <option value="$PROJECT_DIR$/notes/emnist_arg_parsing_densenet_se.sh" />
+        <option value="$PROJECT_DIR$/train_evaluate_emnist_classification_system.py" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" />
       </list>
     </option>
   </component>
@@ -199,15 +211,16 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/data" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/local_experiment_scripts" />
       <recent name="$PROJECT_DIR$/cluster_experiment_scripts" />
       <recent name="$PROJECT_DIR$/experiment_configs" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/scripts" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cluster_experiment_scripts" />
+      <recent name="$PROJECT_DIR$/data" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -240,7 +253,21 @@
       <option name="project" value="LOCAL" />
       <updated>1560294055079</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="change to cifar10, 8 layers for each block and use gpu cluster">
+      <created>1560369613997</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1560369613997</updated>
+    </task>
+    <task id="LOCAL-00003" summary="change to cifar10, 8 layers for each block and use gpu cluster">
+      <created>1560436348904</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1560436348904</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -270,7 +297,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add Densenet with squeeze and excitation networks" />
-    <option name="LAST_COMMIT_MESSAGE" value="add Densenet with squeeze and excitation networks" />
+    <MESSAGE value="change to cifar10, 8 layers for each block and use gpu cluster" />
+    <option name="LAST_COMMIT_MESSAGE" value="change to cifar10, 8 layers for each block and use gpu cluster" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_correct_file.py" />
@@ -281,7 +309,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/arg_extractor.py" />
     <entry file="file://$PROJECT_DIR$/notebooks/Coursework_2_Pytorch_experiment_framework.ipynb" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/storage_utils.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/experiment_builder.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/train_evaluate_emnist_classification_system.py" />
     <entry file="file://$PROJECT_DIR$/mlp/data_providers.py" />
@@ -294,7 +322,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/model_architectures.py" />
     <entry file="file://$PROJECT_DIR$/mlp/layers.py" />
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_layer_test_file.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
     <entry file="file://$PROJECT_DIR$/storage_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -332,13 +360,6 @@
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_multi_gpu_tutorial.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
-          <caret line="3" column="21" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
           <caret line="3" column="21" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
         </state>
       </provider>
@@ -395,6 +416,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="471">
+          <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/arg_extractor.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1240">
@@ -417,14 +462,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/experiment_builder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
+        <state relative-caret-position="480">
           <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/model_architectures.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5343">
+        <state relative-caret-position="20">
           <caret line="5" selection-start-line="5" selection-end-line="5" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -432,34 +477,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/notes/cifar10_arg_parsing_densenet_se.sh">
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="636">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
+        <state relative-caret-position="180">
+          <caret line="9" column="98" selection-start-line="9" selection-start-column="98" selection-end-line="9" selection-end-column="98" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/notes/emnist_arg_parsing_densenet_se.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="6" selection-start-line="6" selection-end-line="12" selection-end-column="113" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="27" column="34" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="716">
+          <caret line="41" column="98" selection-start-line="41" selection-start-column="98" selection-end-line="41" selection-end-column="98" />
         </state>
       </provider>
     </entry>
