@@ -4,6 +4,8 @@
     <list default="true" id="fcc1d3a1-96c2-423b-a5bf-e77bacaa4044" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_architectures.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_architectures.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,7 +18,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1640">
+            <state relative-caret-position="471">
               <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
@@ -28,8 +30,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="9" column="98" selection-start-line="9" selection-start-column="98" selection-end-line="9" selection-end-column="98" />
+            <state relative-caret-position="220">
+              <caret line="11" column="67" selection-start-line="11" selection-start-column="67" selection-end-line="11" selection-end-column="67" />
             </state>
           </provider>
         </entry>
@@ -37,26 +39,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
-              <caret line="41" column="106" selection-start-line="41" selection-start-column="106" selection-end-line="41" selection-end-column="106" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            <state relative-caret-position="778">
+              <caret line="44" column="113" selection-start-line="44" selection-start-column="113" selection-end-line="44" selection-end-column="113" />
             </state>
           </provider>
         </entry>
@@ -64,7 +48,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arg_extractor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1240">
+            <state relative-caret-position="711">
               <caret line="66" selection-start-line="66" selection-end-line="66" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -97,8 +81,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_architectures.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20">
-              <caret line="5" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="400">
+              <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -158,11 +142,11 @@
         <option value="$PROJECT_DIR$/local_experiment_scripts/cifar10_arg_parsing_template.sh" />
         <option value="$PROJECT_DIR$/local_experiment_scripts/cifar100_arg_parsing_template.sh" />
         <option value="$PROJECT_DIR$/arg_extractor.py" />
-        <option value="$PROJECT_DIR$/model_architectures.py" />
         <option value="$PROJECT_DIR$/experiment_builder.py" />
         <option value="$PROJECT_DIR$/notes/cifar10_arg_parsing_densenet_se.sh" />
         <option value="$PROJECT_DIR$/notes/emnist_arg_parsing_densenet_se.sh" />
         <option value="$PROJECT_DIR$/train_evaluate_emnist_classification_system.py" />
+        <option value="$PROJECT_DIR$/model_architectures.py" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" />
       </list>
@@ -287,7 +271,21 @@
       <option name="project" value="LOCAL" />
       <updated>1560635752328</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="(16, 16, 16, 16, 16) layers for each block">
+      <created>1560672161897</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1560672161897</updated>
+    </task>
+    <task id="LOCAL-00008" summary="(16, 16, 16, 16) layers for each block with reduction of 2">
+      <created>1560698108456</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1560698108456</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -321,7 +319,9 @@
     <MESSAGE value="16 layers for each block" />
     <MESSAGE value="(8, 12, 16) layers for each block" />
     <MESSAGE value="(16, 16, 16, 16) layers for each block" />
-    <option name="LAST_COMMIT_MESSAGE" value="(16, 16, 16, 16) layers for each block" />
+    <MESSAGE value="(16, 16, 16, 16, 16) layers for each block" />
+    <MESSAGE value="(16, 16, 16, 16) layers for each block with reduction of 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="(16, 16, 16, 16) layers for each block with reduction of 2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_correct_file.py" />
@@ -332,7 +332,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/arg_extractor.py" />
     <entry file="file://$PROJECT_DIR$/notebooks/Coursework_2_Pytorch_experiment_framework.ipynb" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/storage_utils.py" />
-    <entry file="file://$USER_HOME$/miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
+    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/experiment_builder.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/train_evaluate_emnist_classification_system.py" />
     <entry file="file://$PROJECT_DIR$/mlp/data_providers.py" />
@@ -345,7 +345,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/model_architectures.py" />
     <entry file="file://$PROJECT_DIR$/mlp/layers.py" />
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_layer_test_file.py" />
-    <entry file="file://$USER_HOME$/miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
+    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
     <entry file="file://$PROJECT_DIR$/storage_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -439,43 +439,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1640">
+        <state relative-caret-position="471">
           <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="9" column="98" selection-start-line="9" selection-start-column="98" selection-end-line="9" selection-end-column="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1240">
-          <caret line="66" selection-start-line="66" selection-end-line="66" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -490,27 +466,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
+        <state relative-caret-position="720">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_standard_single_gpu_tutorial.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="711">
+          <caret line="66" selection-start-line="66" selection-end-line="66" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/model_architectures.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
+        <state relative-caret-position="400">
+          <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" column="67" selection-start-line="11" selection-start-column="67" selection-end-line="11" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="41" column="106" selection-start-line="41" selection-start-column="106" selection-end-line="41" selection-end-column="106" />
+        <state relative-caret-position="778">
+          <caret line="44" column="113" selection-start-line="44" selection-start-column="113" selection-end-line="44" selection-end-column="113" />
         </state>
       </provider>
     </entry>

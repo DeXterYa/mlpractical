@@ -298,7 +298,7 @@ class DenseNet(nn.Module):
         super(DenseNet, self).__init__()
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
         self.avgpool_size = avgpool_size
-
+        print(reduction)
         # First Convolution
         self.features = nn.Sequential(OrderedDict([
             ('conv0', nn.Conv2d(image_num_channels, num_init_feature, kernel_size=3, stride=1, padding=1, bias=False)),
