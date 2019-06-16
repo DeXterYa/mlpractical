@@ -4,7 +4,7 @@ cd ..
 export DATASET_DIR="data/"
 # Activate the relevant virtual environment:
 
-python train_evaluate_emnist_classification_system.py --batch_size 100 --continue_from_epoch -1 --seed 0 \
+python train_evaluate_emnist_classification_system.py --batch_size 100 --continue_from_epoch 1 --seed 0 \
                                                       --image_num_channels 3 --image_height 32 --image_width 32 \
                                                       --num_epochs 100 --experiment_name 'cifar10_test_exp' \
                                                       --growth_rate 12 --block_config "(16, 16, 16)" --compression 0.5 \
