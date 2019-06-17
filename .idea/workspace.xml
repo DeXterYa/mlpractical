@@ -16,7 +16,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="471">
+            <state relative-caret-position="1640">
               <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
@@ -46,7 +46,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arg_extractor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="711">
+            <state relative-caret-position="1240">
               <caret line="66" selection-start-line="66" selection-end-line="66" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -79,7 +79,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_architectures.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
+            <state relative-caret-position="5920">
               <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -297,7 +297,14 @@
       <option name="project" value="LOCAL" />
       <updated>1560699595885</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="(16, 16, 16, 16) layers for each block with reduction of 2">
+      <created>1560699677157</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1560699677157</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -344,7 +351,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/arg_extractor.py" />
     <entry file="file://$PROJECT_DIR$/notebooks/Coursework_2_Pytorch_experiment_framework.ipynb" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/storage_utils.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/experiment_builder.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/train_evaluate_emnist_classification_system.py" />
     <entry file="file://$PROJECT_DIR$/mlp/data_providers.py" />
@@ -357,7 +364,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/model_architectures.py" />
     <entry file="file://$PROJECT_DIR$/mlp/layers.py" />
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_layer_test_file.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
     <entry file="file://$PROJECT_DIR$/storage_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -451,33 +458,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="471">
-          <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="600">
-            <caret line="30" selection-start-line="30" selection-end-line="30" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_standard_single_gpu_tutorial.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="720">
@@ -492,22 +472,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
+    <entry file="file://$PROJECT_DIR$/train_evaluate_emnist_classification_system.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="711">
-          <caret line="66" selection-start-line="66" selection-end-line="66" />
+        <state relative-caret-position="1640">
+          <caret line="88" column="44" selection-start-line="88" selection-start-column="44" selection-end-line="88" selection-end-column="44" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model_architectures.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -516,6 +486,43 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="6" column="93" selection-start-line="6" selection-start-column="93" selection-end-line="6" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1240">
+          <caret line="66" selection-start-line="66" selection-end-line="66" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="600">
+            <caret line="30" selection-start-line="30" selection-end-line="30" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_architectures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5920">
+          <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
