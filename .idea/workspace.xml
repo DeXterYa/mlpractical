@@ -25,20 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="6" column="93" selection-start-line="6" selection-start-column="93" selection-end-line="6" selection-end-column="93" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="716">
-              <caret line="41" column="98" selection-start-line="41" selection-start-column="98" selection-end-line="41" selection-end-column="98" />
+            <state relative-caret-position="738">
+              <caret line="42" column="87" selection-start-line="42" selection-start-column="87" selection-end-line="42" selection-end-column="87" />
             </state>
           </provider>
         </entry>
@@ -46,7 +37,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arg_extractor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="831">
+            <state relative-caret-position="1240">
               <caret line="66" selection-start-line="66" selection-end-line="66" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -79,7 +70,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_architectures.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5920">
+            <state relative-caret-position="1191">
               <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -318,7 +309,21 @@
       <option name="project" value="LOCAL" />
       <updated>1560810061913</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="(32, 32, 32) layers for each block with reduction of 6, drop rate 0.2">
+      <created>1560810327470</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1560810327470</updated>
+    </task>
+    <task id="LOCAL-00015" summary="(16, 16, 16, 16) layers for each block with reduction of 6, drop rate 0.2">
+      <created>1560810474966</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1560810474966</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -355,7 +360,9 @@
     <MESSAGE value="(16, 16, 16, 16, 16) layers for each block" />
     <MESSAGE value="(16, 16, 16, 16) layers for each block with reduction of 2" />
     <MESSAGE value="(32, 32, 32, 32) layers for each block with reduction of 6, drop rate 0.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="(32, 32, 32, 32) layers for each block with reduction of 6, drop rate 0.2" />
+    <MESSAGE value="(32, 32, 32) layers for each block with reduction of 6, drop rate 0.2" />
+    <MESSAGE value="(16, 16, 16, 16) layers for each block with reduction of 6, drop rate 0.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="(16, 16, 16, 16) layers for each block with reduction of 6, drop rate 0.2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_correct_file.py" />
@@ -504,6 +511,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1240">
+          <caret line="66" selection-start-line="66" selection-end-line="66" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -523,7 +540,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/model_architectures.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5920">
+        <state relative-caret-position="1191">
           <caret line="300" column="23" selection-start-line="300" selection-start-column="23" selection-end-line="300" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -531,20 +548,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arg_extractor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="831">
-          <caret line="66" selection-start-line="66" selection-end-line="66" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="716">
-          <caret line="41" column="98" selection-start-line="41" selection-start-column="98" selection-end-line="41" selection-end-column="98" />
+        <state relative-caret-position="738">
+          <caret line="42" column="87" selection-start-line="42" selection-start-column="87" selection-end-line="42" selection-end-column="87" />
         </state>
       </provider>
     </entry>
