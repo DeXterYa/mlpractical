@@ -2,19 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fcc1d3a1-96c2-423b-a5bf-e77bacaa4044" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_10.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_7.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_8.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_9.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/run.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster_experiment_scripts/test.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_experiment_scripts/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_experiment_scripts/run.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,7 +23,7 @@
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="716">
-              <caret line="41" column="103" selection-start-line="41" selection-start-column="87" selection-end-line="41" selection-end-column="103" />
+              <caret line="41" column="99" selection-start-line="41" selection-start-column="87" selection-end-line="41" selection-end-column="99" />
             </state>
           </provider>
         </entry>
@@ -36,8 +31,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
+            <state relative-caret-position="716">
+              <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
             </state>
           </provider>
         </entry>
@@ -46,7 +41,7 @@
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="656">
-              <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
+              <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
             </state>
           </provider>
         </entry>
@@ -54,8 +49,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="38" column="69" selection-start-line="38" selection-start-column="69" selection-end-line="38" selection-end-column="69" />
+            <state relative-caret-position="716">
+              <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
             </state>
           </provider>
         </entry>
@@ -63,8 +58,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
+            <state relative-caret-position="716">
+              <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
             </state>
           </provider>
         </entry>
@@ -73,25 +68,25 @@
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="656">
-              <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_7.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
               <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_8.sh">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/run.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="656">
-              <caret line="38" column="104" selection-start-line="38" selection-start-column="104" selection-end-line="38" selection-end-column="104" />
+            <state relative-caret-position="40">
+              <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/experiment_builder.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3723">
+              <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -99,17 +94,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_9.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="736">
+            <state relative-caret-position="840">
               <caret line="42" column="75" selection-start-line="42" selection-start-column="75" selection-end-line="42" selection-end-column="75" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_10.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="316">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+            <state relative-caret-position="318">
+              <caret line="21" selection-start-line="21" selection-end-line="21" />
             </state>
           </provider>
         </entry>
@@ -173,15 +168,16 @@
         <option value="$PROJECT_DIR$/model_architectures.py" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/emnist_arg_parsing_densenet_se.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_7.sh" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_8.sh" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_9.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh" />
         <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh" />
-        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_7.sh" />
-        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_8.sh" />
-        <option value="$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_9.sh" />
+        <option value="$PROJECT_DIR$/cluster_experiment_scripts/run.sh" />
       </list>
     </option>
   </component>
@@ -197,6 +193,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -218,7 +215,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -381,7 +377,14 @@
       <option name="project" value="LOCAL" />
       <updated>1560887991544</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="changed to 10 files per experiment&#10;&#10;1. 4 blocks 32layers&#10;2. growth_rate 24&#10;3. num_init_feature 48">
+      <created>1560888131462</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1560888131462</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -425,11 +428,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="changed to 10 files per experiment&#10;&#10;1. 4 blocks 32layers&#10;2. growth_rate 24&#10;3. num_init_feature 48" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/notes/google_cloud_setup.md" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/arg_extractor.py" />
     <entry file="file://$PROJECT_DIR$/notebooks/Coursework_2_Pytorch_experiment_framework.ipynb" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/storage_utils.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/mlp/lib/python3.6/site-packages/torch/nn/modules/conv.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/experiment_builder.py" />
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/train_evaluate_emnist_classification_system.py" />
     <entry file="file://$PROJECT_DIR$/mlp/data_providers.py" />
@@ -442,7 +444,7 @@
     <entry file="file://$PROJECT_DIR$/mlp/pytorch_experiment_scripts/model_architectures.py" />
     <entry file="file://$PROJECT_DIR$/mlp/layers.py" />
     <entry file="file://$PROJECT_DIR$/scripts/generate_max_pool_layer_test_file.py" />
-    <entry file="file://$PROJECT_DIR$/../miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/base-env/lib/python3.6/site-packages/torch/nn/functional.py" />
     <entry file="file://$PROJECT_DIR$/storage_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -557,13 +559,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
-          <caret line="40" column="70" selection-start-line="40" selection-start-column="56" selection-end-line="40" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se.sh" />
     <entry file="file://$PROJECT_DIR$/arg_extractor.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="11">
@@ -581,13 +577,6 @@
             <caret line="30" selection-start-line="30" selection-end-line="30" />
           </first_editor>
           <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -611,73 +600,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="716">
-          <caret line="41" column="103" selection-start-line="41" selection-start-column="87" selection-end-line="41" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="38" column="103" selection-start-line="38" selection-start-column="103" selection-end-line="38" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
-          <caret line="38" column="69" selection-start-line="38" selection-start-column="69" selection-end-line="38" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_7.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
+        <state relative-caret-position="760">
           <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_8.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="656">
+        <state relative-caret-position="760">
           <caret line="38" column="104" selection-start-line="38" selection-start-column="104" selection-end-line="38" selection-end-column="104" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_9.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="736">
+        <state relative-caret-position="840">
           <caret line="42" column="75" selection-start-line="42" selection-start-column="75" selection-end-line="42" selection-end-column="75" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_10.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+        <state relative-caret-position="318">
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experiment_builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3723">
+          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_1.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="716">
+          <caret line="41" column="99" selection-start-line="41" selection-start-column="87" selection-end-line="41" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_2.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="716">
+          <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_3.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="656">
+          <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_4.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="716">
+          <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_5.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="716">
+          <caret line="41" column="99" selection-start-line="41" selection-start-column="99" selection-end-line="41" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/cifar10_arg_parsing_densenet_se_6.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="656">
+          <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cluster_experiment_scripts/run.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="40">
+          <caret line="2" column="14" selection-start-line="2" selection-start-column="14" selection-end-line="2" selection-end-column="14" />
         </state>
       </provider>
     </entry>

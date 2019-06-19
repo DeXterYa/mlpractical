@@ -36,10 +36,10 @@ export DATASET_DIR=${TMP}/datasets/
 source /home/${STUDENT_ID}/miniconda3/bin/activate mlp
 cd ..
 
-python train_evaluate_emnist_classification_system.py --batch_size 10 --continue_from_epoch -1 --seed 1 \
+python train_evaluate_emnist_classification_system.py --batch_size 100 --continue_from_epoch -1 --seed 1 \
                                                       --image_num_channels 3 --image_height 32 --image_width 32 \
                                                       --num_epochs 100 --experiment_name 'cifar10_test_exp' \
-                                                      --growth_rate 12 --block_config "(32, 32, 32, 32)" --compression 0.5 \
+                                                      --growth_rate 12 --block_config "(8, 8, 8, 8)" --compression 0.5 \
                                                       --num_init_feature 24 --bn_size 8 --drop_rate 0.2 --avgpool_size 8 \
                                                       --reduction 6 --dataset_name 'cifar10'\
                                                       --use_gpu "True" --gpu_id "0" --weight_decay_coefficient 0.00001
