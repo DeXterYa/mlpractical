@@ -41,5 +41,5 @@ python train_evaluate_emnist_classification_system.py --batch_size 100 --continu
                                                       --num_epochs 100 --experiment_name 'cifar10_test_exp' \
                                                       --growth_rate 24 --block_config "(8, 8, 8, 8)" --compression 0.5 \
                                                       --num_init_feature 48 --bn_size 8 --drop_rate 0.2 --avgpool_size 8 \
-                                                      --reduction 6 --dataset_name 'cifar10'\
+                                                      --reduction 2 --dataset_name 'cifar10'\
                                                       --use_gpu "True" --gpu_id "0" --weight_decay_coefficient 0.00001
