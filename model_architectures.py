@@ -1,9 +1,9 @@
+from collections import OrderedDict
+
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from collections import OrderedDict
-
 
 
 class FCCNetwork(nn.Module):
@@ -79,6 +79,7 @@ class FCCNetwork(nn.Module):
 
         self.logits_linear_layer.reset_parameters()
 
+
 class ConvolutionalNetwork(nn.Module):
     def __init__(self, input_shape, dim_reduction_type, num_output_classes, num_filters, num_layers, use_bias=False):
         """
@@ -103,7 +104,6 @@ class ConvolutionalNetwork(nn.Module):
         # build the network
         self.build_module()
         # SE_block parameter
-
 
     def build_module(self):
         """
@@ -131,7 +131,6 @@ class ConvolutionalNetwork(nn.Module):
             # out = out.view(b, c, 1, 1)
 
             # comment out the steps above because the SE_block won't change the shape of out
-
 
             self.layer_dict['conv_{}'.format(i)] = nn.Conv2d(in_channels=out.shape[1],
                                                              # add a conv layer in the module dict
@@ -230,50 +229,331 @@ class ConvolutionalNetwork(nn.Module):
         self.logit_linear_layer.reset_parameters()
 
 
+class BatchRelationalModule(nn.Module):
+    def __init__(self, input_shape, num_filters, num_layers, num_outputs):
+        super(BatchRelationalModule, self).__init__()
+
+        self.input_shape = input_shape
+        self.block_dict = nn.ModuleDict()
+        self.first_time = True
+        self.num_filters = num_filters
+        self.num_outputs = num_outputs
+        self.num_layers = num_layers
+        self.build_block()
+
+    def build_block(self):
+        out_img = torch.zeros(self.input_shape)
+        """g"""
+        if len(out_img.shape) > 3:
+            b, c, h, w = out_img.shape
+            print(out_img.shape)
+            out_img = out_img.view(b, c, h * w)
+
+        out_img = out_img.permute([0, 2, 1])  # h*w, c
+        b, length, c = out_img.shape
+        print(out_img.shape)
+        # x_flat = (64 x 25 x 24)
+        self.coord_tensor = []
+        for i in range(length):
+            self.coord_tensor.append(torch.Tensor(np.array([i])))
+
+        self.coord_tensor = torch.stack(self.coord_tensor, dim=0).unsqueeze(0)
+
+        if self.coord_tensor.shape[0] != out_img.shape[0]:
+            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])
+
+        out_img = torch.cat([out_img, self.coord_tensor], dim=2)
+
+        x_i = torch.unsqueeze(out_img, 1)  # (1xh*wxc)
+        x_i = x_i.repeat(1, length, 1, 1)  # (h*wxh*wxc)
+        x_j = torch.unsqueeze(out_img, 2)  # (h*wx1xc)
+        x_j = x_j.repeat(1, 1, length, 1)  # (h*wxh*wxc)
+
+        # concatenate all together
+        per_location_feature = torch.cat([x_i, x_j], 3)  # (h*wxh*wx2*c)
+
+        out = per_location_feature.view(
+            per_location_feature.shape[0] * per_location_feature.shape[1] * per_location_feature.shape[2],
+            per_location_feature.shape[3])
+        print(out.shape)
+        for idx_layer in range(self.num_layers):
+            self.block_dict['g_fcc_{}'.format(idx_layer)] = nn.Linear(out.shape[1], out_features=self.num_filters)
+            out = F.relu(self.block_dict['g_fcc_{}'.format(idx_layer)].forward(out))
+
+        # reshape again and sum
+        print(out.shape)
+        out = out.view(per_location_feature.shape[0], per_location_feature.shape[1], per_location_feature.shape[2], -1)
+        out = out.sum(1).sum(1)
+        print('here', out.shape)
+        """f"""
+        self.post_processing_layer = nn.Linear(in_features=out.shape[1], out_features=self.num_filters)
+        out = self.post_processing_layer.forward(out)
+        out = F.relu(out)
+        self.output_layer = nn.Linear(in_features=out.shape[1], out_features=self.num_outputs)
+        out = self.output_layer.forward(out)
+        print('Block built with output volume shape', out.shape)
+
+    def forward(self, x_img):
+
+        out_img = x_img
+        # print("input", out_img.shape)
+        """g"""
+        if len(out_img.shape) > 3:
+            b, c, h, w = out_img.shape
+            out_img = out_img.view(b, c, h * w)
+
+        out_img = out_img.permute([0, 2, 1])  # h*w, c
+        b, length, c = out_img.shape
+
+        if self.coord_tensor.shape[0] != out_img.shape[0]:
+            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])
+
+        out_img = torch.cat([out_img, self.coord_tensor.to(x_img.device)], dim=2)
+        # x_flat = (64 x 25 x 24)
+        # print('out_img', out_img.shape)
+        x_i = torch.unsqueeze(out_img, 1)  # (1xh*wxc)
+        x_i = x_i.repeat(1, length, 1, 1)  # (h*wxh*wxc)
+        x_j = torch.unsqueeze(out_img, 2)  # (h*wx1xc)
+        x_j = x_j.repeat(1, 1, length, 1)  # (h*wxh*wxc)
+
+        # concatenate all together
+        per_location_feature = torch.cat([x_i, x_j], 3)  # (h*wxh*wx2*c)
+        out = per_location_feature.view(
+            per_location_feature.shape[0] * per_location_feature.shape[1] * per_location_feature.shape[2],
+            per_location_feature.shape[3])
+        for idx_layer in range(3):
+            out = F.relu(self.block_dict['g_fcc_{}'.format(idx_layer)].forward(out))
+
+        # reshape again and sum
+        # print(out.shape)
+        out = out.view(per_location_feature.shape[0], per_location_feature.shape[1], per_location_feature.shape[2], -1)
+        out = out.sum(1).sum(1)
+
+        """f"""
+        out = self.post_processing_layer.forward(out)
+        out = F.relu(out)
+        out = self.output_layer.forward(out)
+        # print('Block built with output volume shape', out.shape)
+        return out
+
+
+class BatchRelationalWithoutLocationsModule(nn.Module):
+    def __init__(self, input_shape):
+        super(BatchRelationalWithoutLocationsModule, self).__init__()
+
+        self.input_shape = input_shape
+        self.block_dict = nn.ModuleDict()
+        self.first_time = True
+        self.build_block()
+
+    def build_block(self):
+        out_img = torch.zeros(self.input_shape)
+        """g"""
+        if len(out_img.shape) > 3:
+            b, c, h, w = out_img.shape
+            print(out_img.shape)
+            out_img = out_img.view(b, c, h * w)
+
+        out_img = out_img.permute([0, 2, 1])  # h*w, c
+        b, length, c = out_img.shape
+
+        x_i = torch.unsqueeze(out_img, 1)  # (1xh*wxc)
+        x_i = x_i.repeat(1, length, 1, 1)  # (h*wxh*wxc)
+        x_j = torch.unsqueeze(out_img, 2)  # (h*wx1xc)
+        x_j = x_j.repeat(1, 1, length, 1)  # (h*wxh*wxc)
+
+        # concatenate all together
+        per_location_feature = torch.cat([x_i, x_j], 3)  # (h*wxh*wx2*c)
+
+        out = per_location_feature.view(
+            per_location_feature.shape[0] * per_location_feature.shape[1] * per_location_feature.shape[2],
+            per_location_feature.shape[3])
+        print(out.shape)
+        for idx_layer in range(3):
+            self.block_dict['g_fcc_{}'.format(idx_layer)] = nn.Linear(out.shape[1], out_features=32)
+            out = F.relu(self.block_dict['g_fcc_{}'.format(idx_layer)].forward(out))
+
+        # reshape again and sum
+        print(out.shape)
+        out = out.view(per_location_feature.shape[0], per_location_feature.shape[1], per_location_feature.shape[2], -1)
+        out = out.sum(1).sum(1)
+        print('here', out.shape)
+        """f"""
+        self.post_processing_layer = nn.Linear(in_features=out.shape[1], out_features=32)
+        out = self.post_processing_layer.forward(out)
+        out = F.relu(out)
+        self.output_layer = nn.Linear(in_features=out.shape[1], out_features=32)
+        out = self.output_layer.forward(out)
+        print('Block built with output volume shape', out.shape)
+
+    def forward(self, x_img):
+
+        out_img = x_img
+        # print("input", out_img.shape)
+        """g"""
+        if len(out_img.shape) > 3:
+            b, c, h, w = out_img.shape
+            out_img = out_img.view(b, c, h * w)
+
+        out_img = out_img.permute([0, 2, 1])  # h*w, c
+        b, length, c = out_img.shape
+
+        # x_flat = (64 x 25 x 24)
+        # print('out_img', out_img.shape)
+        x_i = torch.unsqueeze(out_img, 1)  # (1xh*wxc)
+        x_i = x_i.repeat(1, length, 1, 1)  # (h*wxh*wxc)
+        x_j = torch.unsqueeze(out_img, 2)  # (h*wx1xc)
+        x_j = x_j.repeat(1, 1, length, 1)  # (h*wxh*wxc)
+
+        # concatenate all together
+        per_location_feature = torch.cat([x_i, x_j], 3)  # (h*wxh*wx2*c)
+        out = per_location_feature.view(
+            per_location_feature.shape[0] * per_location_feature.shape[1] * per_location_feature.shape[2],
+            per_location_feature.shape[3])
+        for idx_layer in range(3):
+            out = F.relu(self.block_dict['g_fcc_{}'.format(idx_layer)].forward(out))
+
+        # reshape again and sum
+        # print(out.shape)
+        out = out.view(per_location_feature.shape[0], per_location_feature.shape[1], per_location_feature.shape[2], -1)
+        out = out.sum(1).sum(1)
+
+        """f"""
+        out = self.post_processing_layer.forward(out)
+        out = F.relu(out)
+        out = self.output_layer.forward(out)
+        # print('Block built with output volume shape', out.shape)
+        return out
+
+
 class _SELayer(nn.Module):
-    def __init__(self, n_channels, reduction):
+    def __init__(self, input_shape, pooling_type, network_type, pooling_size, num_layers, num_filters):
         super(_SELayer, self).__init__()
+        self.input_shape = input_shape
+        self.pooling_type = pooling_type
+        self.network_type = network_type
+        self.pooling_size = pooling_size
+        self.num_layers = num_layers
+        self.num_filters = num_filters
+        self.build_block()
 
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(
-            nn.Linear(n_channels, n_channels // reduction, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Linear(n_channels // reduction, n_channels, bias=False),
-            nn.Sigmoid()
-        )
+    def build_block(self):
+        self.layer_dict = nn.ModuleDict()
+        x = torch.zeros(self.input_shape)  # b, c, h, w
+        out = x.clone()
+        if self.pooling_type == 'avg_pool':
+            out = F.adaptive_avg_pool2d(out, self.pooling_size)  # b, c, pooling_size, pooling_size
+        elif self.pooling_type == 'max_pool':
+            out = F.adaptive_max_pool2d(out, self.pooling_size)  # b, c, pooling_size, pooling_size
+        else:
+            raise ModuleNotFoundError('Pooling type cant be found', self.pooling_type)
+
+        if self.network_type == 'fcc_network':
+            out = out.squeeze()
+            for i in range(self.num_layers - 1):
+                self.layer_dict['fcc_{}'.format(i)] = nn.Linear(in_features=out.shape[-1],
+                                                                out_features=self.num_filters)
+                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+
+            self.layer_dict['fcc_output'] = nn.Linear(in_features=out.shape[-1],
+                                                      out_features=x.shape[1])
+            attention_regions = self.layer_dict['fcc_output'].forward(out).sigmoid()
+
+        elif self.network_type == 'relational_network':
+            self.relational_network = BatchRelationalModule(input_shape=out.shape, num_filters=self.num_filters,
+                                                            num_layers=self.num_layers, num_outputs=x.shape[1])
+            attention_regions = self.relational_network.forward(out).sigmoid()
+        else:
+            raise ModuleNotFoundError('network type can\'t be found')
+
+        out = x * attention_regions.unsqueeze(2).unsqueeze(2)
+
+        print('Built module', print(type(self)), 'with output shape', out.shape, 'and modules',
+              self)
 
     def forward(self, x):
-        b, c, _, _ = x.size()
-        y = self.avg_pool(x).view(b, c)
-        y = self.fc(y)
-        y = y.view(b, c, 1, 1)
-        return x * y.expand_as(x)
+        out = x.clone()
+        if self.pooling_type == 'avg_pool':
+            out = F.adaptive_avg_pool2d(out, self.pooling_size)  # b, c, pooling_size, pooling_size
+        elif self.pooling_type == 'max_pool':
+            out = F.adaptive_max_pool2d(out, self.pooling_size)  # b, c, pooling_size, pooling_size
+        else:
+            return ModuleNotFoundError('Pooling type cant be found')
+
+        if self.network_type == 'fcc_network':
+            out = out.squeeze()
+            for i in range(self.num_layers - 1):
+                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+            attention_regions = self.layer_dict['fcc_output'].forward(out).sigmoid()
+
+        elif self.network_type == 'relational_network':
+            attention_regions = self.relational_network.forward(out).sigmoid()
+
+        out = x * attention_regions.unsqueeze(2).unsqueeze(2)
+
+        return out
 
 
-class _DenseLayer(nn.Sequential):
-    def __init__(self, num_input_features, growth_rate, bn_size, drop_rate, reduction):
-        super(_DenseLayer, self).__init__()
-        self.add_module('norm_1', nn.BatchNorm2d(num_input_features)),
-        self.add_module('relu_1', nn.ReLU(inplace=True)),  # Modify the input directly
-        self.add_module('conv_1', nn.Conv2d(num_input_features, bn_size *
-                                            growth_rate, kernel_size=1, stride=1, bias=False)),
-
-        # in_channels, out_channels
-
-        self.add_module('norm_2', nn.BatchNorm2d(bn_size * growth_rate)),
-        self.add_module('relu_2', nn.ReLU(inplace=True)),
-        self.add_module('conv_2', nn.Conv2d(bn_size * growth_rate, growth_rate,
-                                            kernel_size=3, stride=1, padding=1, bias=False)),
+class BottleNeckDenseLayer(nn.Sequential):
+    def __init__(self, input_shape, growth_rate, drop_rate, attention_pooling_type, attention_network_type,
+                 attention_pooling_size,
+                 num_attention_layers, num_attention_filters):
+        super(BottleNeckDenseLayer, self).__init__()
+        self.input_shape = input_shape
+        self.growth_rate = growth_rate
         self.drop_rate = drop_rate
+        self.num_attention_layers = num_attention_layers
+        self.num_attention_filters = num_attention_filters
+        self.attention_pooling_type = attention_pooling_type
+        self.attention_network_type = attention_network_type
+        self.attention_pooling_size = attention_pooling_size
+        self.build_module()
 
-        se = _SELayer(n_channels=growth_rate, reduction=reduction)
-        self.add_module('se', se)
+    def build_module(self):
+        self.layer_dict = nn.ModuleDict()
+        x = torch.zeros(self.input_shape)
+        out = x
+
+        self.layer_dict['squeeze_excite_attention_layer'] = _SELayer(input_shape=out.shape,
+                                                                     pooling_type=self.attention_pooling_type,
+                                                                     pooling_size=self.attention_pooling_size,
+                                                                     network_type=self.attention_network_type,
+                                                                     num_layers=self.num_attention_layers,
+                                                                     num_filters=self.num_attention_filters)
+        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
+
+        self.layer_dict['bottleneck_conv_layer'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.growth_rate,
+                                                             padding=0, stride=1, kernel_size=1)
+        out = self.layer_dict['bottleneck_conv_layer'].forward(out)
+        self.layer_dict['bottleneck_bn_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
+        out = self.layer_dict['bottleneck_bn_layer'].forward(out)
+        out = F.relu(out)
+
+        self.layer_dict['processing_conv_layer'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.growth_rate,
+                                                             padding=1, stride=1, kernel_size=3)
+        out = self.layer_dict['processing_conv_layer'].forward(out)
+        self.layer_dict['processing_bn_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
+        out = self.layer_dict['processing_bn_layer'].forward(out)
+        out = F.relu(out)
+
+        print('Built module', print(type(self)), 'with output shape', out.shape, 'and modules',
+              self)
 
     def forward(self, x):
-        new_features = super(_DenseLayer, self).forward(x)
+        out = x
+        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
+        out = self.layer_dict['bottleneck_conv_layer'].forward(out)
+        out = self.layer_dict['bottleneck_bn_layer'].forward(out)
+        out = F.relu(out)
+
+        out = self.layer_dict['processing_conv_layer'].forward(out)
+        out = self.layer_dict['processing_bn_layer'].forward(out)
+        out = F.relu(out)
+
         if self.drop_rate > 0:
-            new_feature = F.dropout(new_features, p=self.drop_rate, training=self.training)
-        return torch.cat([x, new_features], 1)
+            out = F.dropout(out, p=self.drop_rate, training=self.training)
+
+        return torch.cat([x, out], 1)
 
 
 class _Transition(nn.Sequential):
@@ -282,41 +562,64 @@ class _Transition(nn.Sequential):
         self.add_module('norm', nn.BatchNorm2d(num_input_features))
         self.add_module('relu', nn.ReLU(inplace=True))
         self.add_module('conv', nn.Conv2d(num_input_features, num_output_features,
-                                         kernel_size=1, stride=1, bias=False))
+                                          kernel_size=1, stride=1, bias=False))
         self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
 
+
 class _DenseBlock(nn.Sequential):
-    def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate, reduction):
+    def __init__(self, input_shape, num_layers, growth_rate, drop_rate,
+                 attention_pooling_type, attention_network_type,
+                 attention_pooling_size,
+                 num_attention_layers, num_attention_filters):
         super(_DenseBlock, self).__init__()
+        x = torch.zeros(input_shape)
+        out = x
         for i in range(num_layers):
-            layer = _DenseLayer(num_input_features + i * growth_rate, growth_rate, bn_size, drop_rate, reduction)
+            layer = BottleNeckDenseLayer(input_shape=out.shape, growth_rate=growth_rate, drop_rate=drop_rate,
+                                         attention_pooling_type=attention_pooling_type,
+                                         attention_network_type=attention_network_type,
+                                         attention_pooling_size=attention_pooling_size,
+                                         num_attention_layers=num_attention_layers,
+                                         num_attention_filters=num_attention_filters
+                                         )
+            out = layer.forward(out)
             self.add_module('denselayer%d' % (i + 1), layer)
 
+
 class DenseNet(nn.Module):
-    def __init__(self, growth_rate=12, block_config=(16,16,16), compression=0.5,
-                num_init_feature = 24, bn_size=4, drop_rate=0, avgpool_size=8, num_classes=10, reduction=1, image_num_channels=1):
+    def __init__(self, input_shape, attention_pooling_type, attention_network_type, attention_pooling_size,
+                 num_attention_layers, num_attention_filters, growth_rate=12, block_config=(4, 4, 4),
+                 compression=0.5,
+                 num_init_feature=24, drop_rate=0, avgpool_size=8, num_classes=10, reduction=1):
         super(DenseNet, self).__init__()
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
         self.avgpool_size = avgpool_size
         print(reduction)
         # First Convolution
+        x = torch.zeros(input_shape)
+        out = x
         self.features = nn.Sequential(OrderedDict([
-            ('conv0', nn.Conv2d(image_num_channels, num_init_feature, kernel_size=3, stride=1, padding=1, bias=False)),
+            ('conv0', nn.Conv2d(x.shape[1], num_init_feature, kernel_size=3, stride=1, padding=1, bias=False)),
         ]))
-
+        out = self.features[0].forward(out)
         # Each denseblock
 
         num_features = num_init_feature
         for i, num_layers in enumerate(block_config):
-            block = _DenseBlock(num_layers=num_layers,
-                               num_input_features=num_features,
-                               bn_size=bn_size, growth_rate=growth_rate,
-                               drop_rate=drop_rate, reduction=reduction)
-            self.features.add_module('denseblock%d' % (i+1), block)
-            num_features = num_features + num_layers*growth_rate
+            block = _DenseBlock(input_shape=out.shape, num_layers=num_layers,
+                                growth_rate=growth_rate,
+                                drop_rate=drop_rate,
+                                attention_pooling_type=attention_pooling_type,
+                                attention_network_type=attention_network_type,
+                                attention_pooling_size=attention_pooling_size,
+                                num_attention_layers=num_attention_layers, num_attention_filters=num_attention_filters)
+            out = block.forward(out)
+            self.features.add_module('denseblock%d' % (i + 1), block)
+            num_features = num_features + num_layers * growth_rate
             if i != len(block_config) - 1:
                 trans = _Transition(num_input_features=num_features,
-                                   num_output_features=int(num_features*compression))
+                                    num_output_features=int(num_features * compression))
+                out = trans.forward(out)
                 self.features.add_module('transition%d' % (i + 1), trans)
                 num_features = int(num_features * compression)
 
@@ -330,10 +633,7 @@ class DenseNet(nn.Module):
         features = self.features(x)
         out = F.relu(features, inplace=True)
         out = F.avg_pool2d(out, kernel_size=self.avgpool_size).view(
-                                        features.size(0), -1)
+            features.size(0), -1)
         out = self.classifier(out)
         return out
-
-
-
 
