@@ -42,5 +42,5 @@ python train_evaluate_emnist_classification_system.py --batch_size 100 --continu
                                                       --num_init_feature 24 --bn_size 8 --drop_rate 0.2 --avgpool_size 8 \
                                                       --attention_pooling_type 'avg_pool' --dataset_name 'cifar10'\
                                                       --attention_network_type 'fcc_network' --attention_pooling_size 1\
-                                                      --num_attention_layers 2  --num_attention_filters 100\
+                                                      --num_attention_layers 2  --num_attention_filters 200\
                                                       --use_gpu "True" --gpu_id "0" --weight_decay_coefficient 0.00001
