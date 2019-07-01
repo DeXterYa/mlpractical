@@ -64,6 +64,17 @@ def get_args():
                         help='')
     parser.add_argument('--reduction', nargs="?", type=int, default=4,
                         help='')
+    parser.add_argument('--attention_pooling_type', nargs="?", type=str, default='avg_pool',
+                        help='')
+    parser.add_argument('--attention_network_type', nargs="?", type=str, default='fcc_network',
+                        help='')
+    parser.add_argument('--attention_pooling_size', nargs="?", type=int, default=4,
+                        help='')
+    parser.add_argument('--num_attention_layers', nargs="?", type=int, default=2,
+                        help='')
+    parser.add_argument('--num_attention_filters', nargs="?", type=int, default=2,
+                        help='')
+
 
     args = parser.parse_args()
     gpu_id = str(args.gpu_id)

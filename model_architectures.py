@@ -590,11 +590,11 @@ class DenseNet(nn.Module):
     def __init__(self, input_shape, attention_pooling_type, attention_network_type, attention_pooling_size,
                  num_attention_layers, num_attention_filters, growth_rate=12, block_config=(4, 4, 4),
                  compression=0.5,
-                 num_init_feature=24, drop_rate=0, avgpool_size=8, num_classes=10, reduction=1):
+                 num_init_feature=24, drop_rate=0, num_classes=10, avgpool_size=8):
         super(DenseNet, self).__init__()
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
-        self.avgpool_size = avgpool_size
-        print(reduction)
+
+
         # First Convolution
         x = torch.zeros(input_shape)
         out = x
@@ -628,6 +628,7 @@ class DenseNet(nn.Module):
 
         # Linear layer
         self.classifier = nn.Linear(num_features, num_classes)
+        self.avgpool_size = avgpool_size
 
     def forward(self, x):
         features = self.features(x)

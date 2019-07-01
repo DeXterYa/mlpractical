@@ -81,11 +81,27 @@ elif args.dataset_name == 'cifar100':
 #     num_output_classes=num_output_classes)
 import sys
 print('Building model', file=sys.stderr)
+# custom_conv_net = DenseNet(
+#     growth_rate=args.growth_rate, block_config=literal_eval(args.block_config), compression=args.compression,
+#     num_init_feature= args.num_init_feature, bn_size=args.bn_size, drop_rate=args.drop_rate, avgpool_size=args.avgpool_size,
+#     num_classes=num_output_classes, reduction=args.reduction, image_num_channels=args.image_num_channels
+# )
+
 custom_conv_net = DenseNet(
-    growth_rate=args.growth_rate, block_config=literal_eval(args.block_config), compression=args.compression,
-    num_init_feature= args.num_init_feature, bn_size=args.bn_size, drop_rate=args.drop_rate, avgpool_size=args.avgpool_size,
-    num_classes=num_output_classes, reduction=args.reduction, image_num_channels=args.image_num_channels
+        input_shape=(args.batch_size, args.image_num_channels, args.image_height, args.image_height),
+        attention_pooling_type=args.attention_pooling_type, attention_network_type=args.attention_network_type,
+         attention_pooling_size=args.attention_pooling_size,
+        num_attention_layers=args. num_attention_layers,num_attention_filters=args.num_attention_filters,
+
+        growth_rate=args.growth_rate, block_config=literal_eval(args.block_config), compression=args.compression,
+        num_init_feature=args.num_init_feature, drop_rate=args.drop_rate,
+
+        num_classes=num_output_classes
 )
+
+
+
+
 print('Building experiment', file=sys.stderr)
 conv_experiment = ExperimentBuilder(network_model=custom_conv_net,
                                     experiment_name=args.experiment_name,
