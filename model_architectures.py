@@ -339,6 +339,7 @@ class BatchRelationalModule(nn.Module):
 
 class BatchRelationalWithoutLocationsModule(nn.Module):
     def __init__(self, input_shape):
+
         super(BatchRelationalWithoutLocationsModule, self).__init__()
 
         self.input_shape = input_shape
