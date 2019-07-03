@@ -260,7 +260,7 @@ class BatchRelationalModule(nn.Module):
         self.coord_tensor = torch.stack(self.coord_tensor, dim=0).unsqueeze(0)
 
         if self.coord_tensor.shape[0] != out_img.shape[0]:
-            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])
+            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])  # Don't understand
 
         out_img = torch.cat([out_img, self.coord_tensor], dim=2)
 
@@ -321,7 +321,7 @@ class BatchRelationalModule(nn.Module):
         out = per_location_feature.view(
             per_location_feature.shape[0] * per_location_feature.shape[1] * per_location_feature.shape[2],
             per_location_feature.shape[3])
-        for idx_layer in range(3):
+        for idx_layer in range(self.num_layers):
             out = F.relu(self.block_dict['g_fcc_{}'.format(idx_layer)].forward(out))
 
         # reshape again and sum
@@ -339,7 +339,6 @@ class BatchRelationalModule(nn.Module):
 
 class BatchRelationalWithoutLocationsModule(nn.Module):
     def __init__(self, input_shape):
-
         super(BatchRelationalWithoutLocationsModule, self).__init__()
 
         self.input_shape = input_shape
