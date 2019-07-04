@@ -1,5 +1,7 @@
 #!/bin/bash
-for i in {1..3}
-do
-   bash cifar10_arg_parsing_densenet_se_$i.sh
-done
+cd ..
+
+cd cifar10_test_exp/
+cd result_outputs/
+
+cat summary.csv
