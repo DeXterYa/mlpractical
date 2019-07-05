@@ -7,8 +7,8 @@ do
     for (( j = 1 ; j <= 3; j++ ))
     do
 
-          cd cifar10_test_exp_${i}_$j/
-          cd result_outputs/
+          cd cifar10_test_exp_${i}_$j
+          cd result_outputs
           echo -n " "
           echo -n "result_${i}_$j"
           echo -n "train"
