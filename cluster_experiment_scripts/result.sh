@@ -16,6 +16,8 @@ do
           echo -n "validation"
           awk -F, '{if (a[2] < $3 && NR!=1) a[2] = $3}END{print a[2]}' summary.csv
           cat test_summary.csv
+          cd ..
+          cd ..
     done
 
 

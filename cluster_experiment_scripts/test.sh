@@ -1,6 +1,6 @@
 #!/bin/bash
 cd ..
-
+ls
 cd cifar10_test_exp/
 cd result_outputs/
 
