@@ -1,4 +1,4 @@
-#!/bin/shex
+#!/bin/sh
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
 #SBATCH --partition=Standard
@@ -35,8 +35,6 @@ export DATASET_DIR=${TMP}/datasets/
 
 source /home/${STUDENT_ID}/miniconda3/bin/activate mlp
 cd ..
-
-
 
 python train_evaluate_emnist_classification_system.py --batch_size 50 --continue_from_epoch -1 --seed 0 \
                                                       --image_num_channels 3 --image_height 32 --image_width 32 \
