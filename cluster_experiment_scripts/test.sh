@@ -12,7 +12,10 @@ do
     for j in {1..3}
     do
 
-          echo -n "result_${i}_${j}"
+          echo  "result_${i}_${j}"
+          echo -n "---------------"
+          echo " "
+          echo  "validation"
     done
 
 
