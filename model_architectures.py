@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from batch_operators import BatchConv2DLayer
+
 
 class FCCNetwork(nn.Module):
     def __init__(self, input_shape, num_output_classes, num_filters, num_layers, use_bias=False):
@@ -78,6 +80,356 @@ class FCCNetwork(nn.Module):
             item.reset_parameters()
 
         self.logits_linear_layer.reset_parameters()
+
+
+class WeightAttentionalConvLayer(nn.Module):
+    def __init__(self, input_shape, num_filters, kernel_size, attention_pooling_type, attention_pooling_size,
+                 num_attention_layers, num_attention_filters, attention_network_type, padding, use_bias, dilation=1,
+                 stride=1, groups=0):
+        super(WeightAttentionalConvLayer, self).__init__()
+        self.input_shape = input_shape
+        self.num_filters = num_filters
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.stride = stride
+        self.groups = groups
+        self.padding = padding
+        self.use_bias = use_bias
+        self.attention_pooling_type = attention_pooling_type
+        self.attention_pooling_size = attention_pooling_size
+        self.num_attention_layers = num_attention_layers
+        self.num_attention_filters = num_attention_filters
+        self.attention_network_type = attention_network_type
+        self.build()
+
+    def build(self):
+        x_init = torch.zeros(self.input_shape)
+        self.layer_dict = nn.ModuleDict()
+        self.weight_parameters = nn.Parameter(torch.empty(self.num_filters, self.input_shape[1],
+                                                          self.kernel_size, self.kernel_size))
+        nn.init.xavier_uniform_(self.weight_parameters)
+        if self.use_bias is True:
+            self.bias_parameters = nn.Parameter(torch.zeros(self.num_filters))
+            repeated_bias_parameter = self.bias_parameters.clone().unsqueeze(0).repeat([x_init.shape[0], 1])
+        else:
+            self.bias_parameters = None
+            repeated_bias_parameter = None
+
+        out = x_init
+        if self.attention_pooling_type == 'avg_pool':
+            out = F.adaptive_avg_pool2d(out, self.attention_pooling_size)  # b, c, pooling_size, pooling_size
+        elif self.attention_pooling_type == 'max_pool':
+            out = F.adaptive_max_pool2d(out, self.attention_pooling_size)  # b, c, pooling_size, pooling_size
+        else:
+            raise ModuleNotFoundError('Pooling type cant be found', self.pooling_type)
+
+        if self.attention_network_type == 'fcc_network':
+            out = out.view(out.shape[0], -1)
+            for i in range(self.num_attention_layers - 1):
+                self.layer_dict['fcc_{}'.format(i)] = nn.Linear(in_features=out.shape[-1],
+                                                                out_features=self.num_attention_filters)
+                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+
+            self.layer_dict['fcc_output'] = nn.Linear(in_features=out.shape[-1],
+                                                      out_features=self.weight_parameters.view(-1).shape[0])
+            attention_regions = self.layer_dict['fcc_output'].forward(out).sigmoid()
+
+        elif self.attention_network_type == 'relational_network':
+            self.relational_network = BatchRelationalModule(input_shape=out.shape,
+                                                            num_filters=self.num_attention_filters,
+                                                            num_layers=self.num_attention_layers,
+                                                            num_outputs=self.weight_parameters.view(-1).shape[0])
+            attention_regions = self.relational_network.forward(out).sigmoid()
+        else:
+            raise ModuleNotFoundError('network type can\'t be found')
+
+        repeat_weight_parameters = self.weight_parameters.clone().unsqueeze(0).repeat([self.input_shape[0], 1, 1, 1, 1])
+        print(attention_regions.shape, self.weight_parameters.view(-1).shape,
+              repeat_weight_parameters.view(self.input_shape[0], -1).shape)
+        selected_attention_regions = attention_regions.view(repeat_weight_parameters.shape)
+        selected_weight_parameters = selected_attention_regions * repeat_weight_parameters
+
+        x_init = x_init.unsqueeze(1)
+
+        self.layer_dict['bconv2d_layer'] = BatchConv2DLayer(out_channels=self.num_filters,
+                                                            in_channels=x_init.shape[2], padding=self.padding,
+                                                            dilation=self.dilation)
+
+        out = self.layer_dict['bconv2d_layer'].forward(x=x_init, weight=selected_weight_parameters,
+                                                       bias=repeated_bias_parameter)
+
+        out = out.view([out.shape[0]] + list(out.shape[2:]))
+        print('Built', type(self), 'with output', out.shape)
+
+    def forward(self, x):
+        if self.use_bias is True:
+            repeated_bias_parameter = self.bias_parameters.unsqueeze(0).repeat([x.shape[0], 1])
+        else:
+            repeated_bias_parameter = None
+
+        out = x
+
+        if self.attention_pooling_type == 'avg_pool':
+            out = F.adaptive_avg_pool2d(out, self.attention_pooling_size)  # b, c, pooling_size, pooling_size
+        elif self.attention_pooling_type == 'max_pool':
+            out = F.adaptive_max_pool2d(out, self.attention_pooling_size)  # b, c, pooling_size, pooling_size
+        else:
+            raise ModuleNotFoundError('Pooling type cant be found', self.pooling_type)
+
+        if self.attention_network_type == 'fcc_network':
+            out = out.view(out.shape[0], -1)
+            for i in range(self.num_attention_layers - 1):
+                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+
+            attention_regions = self.layer_dict['fcc_output'].forward(out).sigmoid()
+
+        elif self.attention_network_type == 'relational_network':
+            attention_regions = self.relational_network.forward(out).sigmoid()
+        else:
+            raise ModuleNotFoundError('network type can\'t be found')
+
+        repeat_weight_parameters = self.weight_parameters.clone().unsqueeze(0).repeat([self.input_shape[0], 1, 1, 1, 1])
+        selected_attention_regions = attention_regions.view(repeat_weight_parameters.shape)
+        selected_weight_parameters = selected_attention_regions * repeat_weight_parameters
+
+        x_init = x.unsqueeze(1)
+
+        out = self.layer_dict['bconv2d_layer'].forward(x=x_init, weight=selected_weight_parameters,
+                                                       bias=repeated_bias_parameter)
+
+        out = out.view([out.shape[0]] + list(out.shape[2:]))
+        return out
+
+
+class HyperConvLayer(nn.Module):
+    def __init__(self, input_shape, num_filters, kernel_size, padding, use_bias, dilation=1, stride=1, groups=0):
+        super(HyperConvLayer, self).__init__()
+        self.input_shape = input_shape
+        self.num_filters = num_filters
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.stride = stride
+        self.groups = groups
+        self.padding = padding
+        self.use_bias = use_bias
+        self.build()
+
+    def build(self):
+        x_init = torch.zeros(self.input_shape)
+        self.layer_dict = nn.ModuleDict()
+
+        nn.init.xavier_uniform_(self.weight_parameters)
+        if self.use_bias is True:
+            self.bias_parameters = nn.Parameter(torch.zeros(self.num_filters))
+            repeated_bias_parameter = self.bias_parameters.clone().unsqueeze(0).repeat([x_init.shape[0], 1])
+        else:
+            self.bias_parameters = None
+            repeated_bias_parameter = None
+
+        self.layer_dict = nn.ModuleDict()
+        x_channels = F.avg_pool2d(x_init, x_init.shape[-1]).squeeze()
+        self.layer_dict['weight_attention_network'] = nn.Linear(in_features=x_channels.shape[1],
+                                                                out_features=self.num_filters * x_channels.shape[
+                                                                    1] * self.kernel_size * self.kernel_size,
+                                                                bias=True)
+        selected_attention_regions = self.layer_dict['weight_attention_network'].forward(x_channels).view(
+            x_init.shape[0], self.num_filters, -1, self.kernel_size, self.kernel_size)
+
+        x_init = x_init.unsqueeze(1)
+        self.layer_dict['bconv2d_layer'] = BatchConv2DLayer(out_channels=self.num_filters,
+                                                            in_channels=x_init.shape[2], padding=self.padding,
+                                                            dilation=self.dilation)
+
+        out = self.layer_dict['bconv2d_layer'].forward(x=x_init, weight=selected_attention_regions,
+                                                       bias=repeated_bias_parameter)
+
+    def forward(self, x):
+        if self.use_bias is True:
+            repeated_bias_parameter = self.bias_parameters.unsqueeze(0).repeat([x.shape[0], 1])
+        else:
+            repeated_bias_parameter = None
+
+        x_channels = F.avg_pool2d(x, x.shape[-1]).squeeze()
+
+        selected_attention_regions = self.layer_dict['weight_attention_network'].forward(x_channels).view(
+            x.shape[0], self.num_filters, -1, self.kernel_size, self.kernel_size)
+
+        x_init = x.unsqueeze(1)
+
+        out = self.layer_dict['bconv2d_layer'].forward(x=x_init, weight=selected_attention_regions,
+                                                       bias=repeated_bias_parameter)
+
+        out = out.squeeze(1)
+        return out
+
+
+class SqueezeExciteConv2dNormLeakyReLU(nn.Module):
+    def __init__(self, input_shape, num_filters, kernel_size, attention_pooling_type, attention_pooling_size,
+                 num_attention_layers, num_attention_filters, attention_network_type, dilation=1, stride=1, groups=1,
+                 padding=0, use_bias=False,
+                 normalization=True, weight_attention=False, ):
+        super(SqueezeExciteConv2dNormLeakyReLU, self).__init__()
+        self.input_shape = list(input_shape)
+        self.num_filters = num_filters
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.use_bias = use_bias
+        self.normalization = normalization
+        self.dilation = dilation
+        self.weight_attention = weight_attention
+        self.groups = groups
+        self.attention_pooling_type = attention_pooling_type
+        self.attention_pooling_size = attention_pooling_size
+        self.num_attention_layers = num_attention_layers
+        self.num_attention_filters = num_attention_filters
+        self.attention_network_type = attention_network_type
+        self.layer_dict = nn.ModuleDict()
+        self.build_network()
+
+    def build_network(self):
+        x = torch.ones(self.input_shape)
+        out = x
+
+        self.layer_dict['squeeze_excite_attention_layer'] = _SELayer(input_shape=out.shape,
+                                                                     pooling_type=self.attention_pooling_type,
+                                                                     pooling_size=self.attention_pooling_size,
+                                                                     network_type=self.attention_network_type,
+                                                                     num_layers=self.num_attention_layers,
+                                                                     num_filters=self.num_attention_filters)
+        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
+
+        self.layer_dict['conv'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,
+                                            kernel_size=self.kernel_size, stride=self.stride, padding=self.padding,
+                                            dilation=self.dilation, groups=self.groups, bias=self.use_bias)
+
+        out = self.layer_dict['conv'].forward(out)
+
+        if self.normalization:
+            self.layer_dict['norm_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
+            out = self.layer_dict['norm_layer'](out)
+
+        self.layer_dict['relu'] = nn.ReLU()
+        out = self.layer_dict['relu'](out)
+        print(out.shape)
+
+    def forward(self, x):
+        out = x
+
+        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
+
+        out = self.layer_dict['conv'].forward(out)
+
+        if self.normalization:
+            out = self.layer_dict['norm_layer'](out)
+
+        out = self.layer_dict['relu'](out)
+        return out
+
+
+class Conv2dNormLeakyReLU(nn.Module):
+    def __init__(self, input_shape, num_filters, kernel_size, dilation=1, stride=1, groups=1, padding=0, use_bias=False,
+                 normalization=True, attention_pooling_type=None, attention_pooling_size=None,
+                 num_attention_layers=None, num_attention_filters=None, attention_network_type=None):
+        super(Conv2dNormLeakyReLU, self).__init__()
+        self.input_shape = list(input_shape)
+        self.num_filters = num_filters
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.use_bias = use_bias
+        self.normalization = normalization
+        self.dilation = dilation
+        self.groups = groups
+        self.layer_dict = nn.ModuleDict()
+        self.build_network()
+
+    def build_network(self):
+        x = torch.ones(self.input_shape)
+        out = x
+
+        self.layer_dict['conv'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.num_filters,
+                                            kernel_size=self.kernel_size, stride=self.stride, padding=self.padding,
+                                            dilation=self.dilation, groups=self.groups, bias=self.use_bias)
+
+        out = self.layer_dict['conv'].forward(out)
+
+        if self.normalization:
+            self.layer_dict['norm_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
+            out = self.layer_dict['norm_layer'](out)
+
+        self.layer_dict['relu'] = nn.ReLU()
+        out = self.layer_dict['relu'](out)
+        print(out.shape)
+
+    def forward(self, x):
+        out = x
+
+        out = self.layer_dict['conv'].forward(out)
+
+        if self.normalization:
+            out = self.layer_dict['norm_layer'](out)
+
+        out = self.layer_dict['relu'](out)
+        return out
+
+
+class WeightAttentionalConv2dNormLeakyReLU(nn.Module):
+    def __init__(self, input_shape, num_filters, kernel_size, attention_pooling_type, attention_pooling_size,
+                 num_attention_layers, num_attention_filters, attention_network_type, dilation=1, stride=1, groups=1,
+                 padding=0, use_bias=False,
+                 normalization=True):
+        super(WeightAttentionalConv2dNormLeakyReLU, self).__init__()
+        self.input_shape = list(input_shape)
+        self.num_filters = num_filters
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.use_bias = use_bias
+        self.attention_pooling_type = attention_pooling_type
+        self.attention_pooling_size = attention_pooling_size
+        self.num_attention_layers = num_attention_layers
+        self.num_attention_filters = num_attention_filters
+        self.attention_network_type = attention_network_type
+        self.normalization = normalization
+        self.dilation = dilation
+        self.groups = groups
+        self.layer_dict = nn.ModuleDict()
+        self.build_network()
+
+    def build_network(self):
+        x = torch.ones(self.input_shape)
+        out = x
+
+        self.layer_dict['WeightAttentionalConvLayer'] = WeightAttentionalConvLayer(input_shape=x.shape,
+                                                                                   num_filters=self.num_filters,
+                                                                                   kernel_size=self.kernel_size,
+                                                                                   padding=self.padding,
+                                                                                   use_bias=self.use_bias,
+                                                                                   attention_pooling_type=self.attention_pooling_type,
+                                                                                   attention_pooling_size=self.attention_pooling_size,
+                                                                                   attention_network_type=self.attention_network_type,
+                                                                                   num_attention_layers=self.num_attention_layers,
+                                                                                   num_attention_filters=self.num_attention_filters)
+        out = self.layer_dict['WeightAttentionalConvLayer'].forward(out)
+        if self.normalization:
+            self.layer_dict['norm_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
+            out = self.layer_dict['norm_layer'](out)
+
+        self.layer_dict['activation'] = nn.ReLU()
+        out = self.layer_dict['activation'](out)
+        print(out.shape)
+
+    def forward(self, x):
+        out = x
+
+        out = self.layer_dict['WeightAttentionalConvLayer'].forward(out)
+
+        if self.normalization:
+            out = self.layer_dict['norm_layer'](out)
+
+        out = self.layer_dict['activation'](out)
+        return out
 
 
 class ConvolutionalNetwork(nn.Module):
@@ -449,7 +801,7 @@ class _SELayer(nn.Module):
             raise ModuleNotFoundError('Pooling type cant be found', self.pooling_type)
 
         if self.network_type == 'fcc_network':
-            out = out.squeeze()
+            out = out.view(out.shape[0], -1)
             for i in range(self.num_layers - 1):
                 self.layer_dict['fcc_{}'.format(i)] = nn.Linear(in_features=out.shape[-1],
                                                                 out_features=self.num_filters)
@@ -465,7 +817,7 @@ class _SELayer(nn.Module):
             attention_regions = self.relational_network.forward(out).sigmoid()
         else:
             raise ModuleNotFoundError('network type can\'t be found')
-
+        print(x.shape, attention_regions.shape)
         out = x * attention_regions.unsqueeze(2).unsqueeze(2)
 
         print('Built module', print(type(self)), 'with output shape', out.shape, 'and modules',
@@ -481,7 +833,7 @@ class _SELayer(nn.Module):
             return ModuleNotFoundError('Pooling type cant be found')
 
         if self.network_type == 'fcc_network':
-            out = out.squeeze()
+            out = out.view(out.shape[0], -1)
             for i in range(self.num_layers - 1):
                 out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
             attention_regions = self.layer_dict['fcc_output'].forward(out).sigmoid()
@@ -497,7 +849,8 @@ class _SELayer(nn.Module):
 class BottleNeckDenseLayer(nn.Sequential):
     def __init__(self, input_shape, growth_rate, drop_rate, attention_pooling_type, attention_network_type,
                  attention_pooling_size,
-                 num_attention_layers, num_attention_filters):
+                 num_attention_layers, num_attention_filters, conv_bn_relu_type_bottleneck,
+                 conv_bn_relu_type_processing):
         super(BottleNeckDenseLayer, self).__init__()
         self.input_shape = input_shape
         self.growth_rate = growth_rate
@@ -507,6 +860,8 @@ class BottleNeckDenseLayer(nn.Sequential):
         self.attention_pooling_type = attention_pooling_type
         self.attention_network_type = attention_network_type
         self.attention_pooling_size = attention_pooling_size
+        self.conv_bn_relu_type_bottleneck = conv_bn_relu_type_bottleneck
+        self.conv_bn_relu_type_processing = conv_bn_relu_type_processing
         self.build_module()
 
     def build_module(self):
@@ -514,41 +869,42 @@ class BottleNeckDenseLayer(nn.Sequential):
         x = torch.zeros(self.input_shape)
         out = x
 
-        self.layer_dict['squeeze_excite_attention_layer'] = _SELayer(input_shape=out.shape,
-                                                                     pooling_type=self.attention_pooling_type,
-                                                                     pooling_size=self.attention_pooling_size,
-                                                                     network_type=self.attention_network_type,
-                                                                     num_layers=self.num_attention_layers,
-                                                                     num_filters=self.num_attention_filters)
-        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
+        self.layer_dict['bottleneck_conv_bn_relu'] = self.conv_bn_relu_type_bottleneck \
+            (input_shape=out.shape,
+             num_filters=self.growth_rate, kernel_size=1,
+             dilation=1, stride=1, groups=1, padding=0,
+             use_bias=False,
+             normalization=True,
+             attention_pooling_type=self.attention_pooling_type,
+             attention_pooling_size=self.attention_pooling_size,
+             num_attention_layers=self.num_attention_layers,
+             num_attention_filters=self.num_attention_filters,
+             attention_network_type=self.attention_network_type)
 
-        self.layer_dict['bottleneck_conv_layer'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.growth_rate,
-                                                             padding=0, stride=1, kernel_size=1)
-        out = self.layer_dict['bottleneck_conv_layer'].forward(out)
-        self.layer_dict['bottleneck_bn_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
-        out = self.layer_dict['bottleneck_bn_layer'].forward(out)
-        out = F.relu(out)
+        out = self.layer_dict['bottleneck_conv_bn_relu'].forward(out)
 
-        self.layer_dict['processing_conv_layer'] = nn.Conv2d(in_channels=out.shape[1], out_channels=self.growth_rate,
-                                                             padding=1, stride=1, kernel_size=3)
-        out = self.layer_dict['processing_conv_layer'].forward(out)
-        self.layer_dict['processing_bn_layer'] = nn.BatchNorm2d(num_features=out.shape[1])
-        out = self.layer_dict['processing_bn_layer'].forward(out)
-        out = F.relu(out)
+        self.layer_dict['processing_conv_bn_relu'] = self.conv_bn_relu_type_processing \
+            (input_shape=out.shape,
+             num_filters=self.growth_rate,
+             kernel_size=3,
+             dilation=1, stride=1, groups=1,
+             padding=1,
+             use_bias=False,
+             normalization=True, attention_pooling_type=self.attention_pooling_type,
+             attention_pooling_size=self.attention_pooling_size,
+             num_attention_layers=self.num_attention_layers,
+             num_attention_filters=self.num_attention_filters,
+             attention_network_type=self.attention_network_type)
+        out = self.layer_dict['processing_conv_bn_relu'].forward(out)
 
         print('Built module', print(type(self)), 'with output shape', out.shape, 'and modules',
               self)
 
     def forward(self, x):
         out = x
-        out = self.layer_dict['squeeze_excite_attention_layer'].forward(out)
-        out = self.layer_dict['bottleneck_conv_layer'].forward(out)
-        out = self.layer_dict['bottleneck_bn_layer'].forward(out)
-        out = F.relu(out)
+        out = self.layer_dict['bottleneck_conv_bn_relu'].forward(out)
 
-        out = self.layer_dict['processing_conv_layer'].forward(out)
-        out = self.layer_dict['processing_bn_layer'].forward(out)
-        out = F.relu(out)
+        out = self.layer_dict['processing_conv_bn_relu'].forward(out)
 
         if self.drop_rate > 0:
             out = F.dropout(out, p=self.drop_rate, training=self.training)
@@ -570,7 +926,8 @@ class _DenseBlock(nn.Sequential):
     def __init__(self, input_shape, num_layers, growth_rate, drop_rate,
                  attention_pooling_type, attention_network_type,
                  attention_pooling_size,
-                 num_attention_layers, num_attention_filters):
+                 num_attention_layers, num_attention_filters, conv_bn_relu_type_bottleneck,
+                 conv_bn_relu_type_processing):
         super(_DenseBlock, self).__init__()
         x = torch.zeros(input_shape)
         out = x
@@ -580,20 +937,21 @@ class _DenseBlock(nn.Sequential):
                                          attention_network_type=attention_network_type,
                                          attention_pooling_size=attention_pooling_size,
                                          num_attention_layers=num_attention_layers,
-                                         num_attention_filters=num_attention_filters
-                                         )
+                                         num_attention_filters=num_attention_filters,
+                                         conv_bn_relu_type_bottleneck=conv_bn_relu_type_bottleneck,
+                                         conv_bn_relu_type_processing=conv_bn_relu_type_processing)
             out = layer.forward(out)
             self.add_module('denselayer%d' % (i + 1), layer)
 
 
 class DenseNet(nn.Module):
     def __init__(self, input_shape, attention_pooling_type, attention_network_type, attention_pooling_size,
-                 num_attention_layers, num_attention_filters, growth_rate=12, block_config=(4, 4, 4),
+                 num_attention_layers, num_attention_filters, conv_bn_relu_type_bottleneck,
+                 conv_bn_relu_type_processing, growth_rate=12, block_config=(4, 4, 4),
                  compression=0.5,
                  num_init_feature=24, drop_rate=0, num_classes=10, avgpool_size=8):
         super(DenseNet, self).__init__()
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
-
 
         # First Convolution
         x = torch.zeros(input_shape)
@@ -612,7 +970,9 @@ class DenseNet(nn.Module):
                                 attention_pooling_type=attention_pooling_type,
                                 attention_network_type=attention_network_type,
                                 attention_pooling_size=attention_pooling_size,
-                                num_attention_layers=num_attention_layers, num_attention_filters=num_attention_filters)
+                                num_attention_layers=num_attention_layers, num_attention_filters=num_attention_filters,
+                                conv_bn_relu_type_bottleneck=conv_bn_relu_type_bottleneck,
+                                conv_bn_relu_type_processing=conv_bn_relu_type_processing)
             out = block.forward(out)
             self.features.add_module('denseblock%d' % (i + 1), block)
             num_features = num_features + num_layers * growth_rate
@@ -638,3 +998,9 @@ class DenseNet(nn.Module):
         out = self.classifier(out)
         return out
 
+# x = torch.ones(100, 100, 3, 28, 28)
+# # test_batch_c_bn_relu = BatchConv2dNormLeakyReLU(input_shape=x.shape, num_filters=16, kernel_size=3, dilation=1,
+# #                                                 padding=0, use_bias=True, normalization=True, weight_attention=False)
+# dense_net_test = BatchDenseNetActivationNormClassifierNet(im_shape=x.shape, conv_type=BatchConv2dNormLeakyReLU, num_filters=8, num_output_classes=10, num_stages=3, num_blocks_per_stage=4, average_pool_output=False, reduction_rate=1.0, dropout_rate=0.0)
+# output = dense_net_test.forward(x=x, dropout_training=False)
+# print(output.shape)
