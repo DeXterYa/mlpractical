@@ -8,18 +8,8 @@ do
     for (( j = 1 ; j <= 3; j++ ))
     do
 
-          cd cifar10_test_exp_${i}_$j
-          cd result_outputs
-          echo "---------------"
-          echo "result_${i}_$j"
-          echo "validation"
-          awk -F, '{if (a[2] < $3 && NR!=1) a[2] = $3}END{print a[2]}' summary.csv
+       rsync -ua --progress s1891076@mlp.inf.ed.ac.uk:/home/s1891076/mlpractical/experiment_${i}_${j}/result_outputs/summary.csv /afs/inf.ed.ac.uk/user/s18/s1891076/
 
-          echo  "train"
-          awk -F, '{if (a[1] < $1 && NR!=1) a[1] = $1}END{print a[1]}' summary.csv
-          cat test_summary.csv
-          cd ..
-          cd ..
     done
 
 
