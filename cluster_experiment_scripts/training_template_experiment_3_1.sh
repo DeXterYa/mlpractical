@@ -45,5 +45,5 @@ python train_evaluate_emnist_classification_system.py --batch_size 50 --continue
                                                       --attention_network_type "fcc_network" --attention_pooling_size 3\
                                                       --num_attention_layers 3  --num_attention_filters 50\
                                                       --conv_bn_relu_type_bottleneck "SqueezeExciteConv2dNormLeakyReLU" \
-                                                      --conv_bn_relu_type_processing "BottleNeckDenseLayer" \
+                                                      --conv_bn_relu_type_processing "Conv2dNormLeakyReLU" \
                                                       --use_gpu "True" --gpu_id "0" --weight_decay_coefficient 0.00001
