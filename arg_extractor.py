@@ -74,6 +74,10 @@ def get_args():
                         help='')
     parser.add_argument('--num_attention_filters', nargs="?", type=int, default=2,
                         help='')
+    parser.add_argument('--conv_bn_relu_type_bottleneck', nargs="?", type=str, default='BottleNeckDenseLayer',
+                        help='')
+    parser.add_argument('--conv_bn_relu_type_processing', nargs="?", type=str, default='SqueezeExciteConv2dNormLeakyReLU',
+                        help='')
 
 
     args = parser.parse_args()
