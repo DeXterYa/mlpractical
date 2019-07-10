@@ -188,7 +188,8 @@ class WeightAttentionalConvLayer(nn.Module):
         else:
             raise ModuleNotFoundError('network type can\'t be found')
 
-        repeat_weight_parameters = self.weight_parameters.clone().unsqueeze(0).repeat([self.input_shape[0], 1, 1, 1, 1])
+        repeat_weight_parameters = self.weight_parameters.clone().unsqueeze(0).repeat([x.shape[0], 1, 1, 1, 1])
+
         selected_attention_regions = attention_regions.view(repeat_weight_parameters.shape)
         selected_weight_parameters = selected_attention_regions * repeat_weight_parameters
 
