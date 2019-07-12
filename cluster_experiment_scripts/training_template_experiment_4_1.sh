@@ -42,7 +42,7 @@ python train_evaluate_emnist_classification_system.py --batch_size 50 --continue
                                                       --growth_rate 24 --block_config "(5, 5, 5, 5)" --compression 0.5 \
                                                       --num_init_feature 24 --bn_size 8 --drop_rate 0.2 --avgpool_size 8 \
                                                       --attention_pooling_type "avg_pool" --dataset_name "cifar10"\
-                                                      --attention_network_type "fcc_network" --attention_pooling_size 1\
+                                                      --attention_network_type "fcc_network" --attention_pooling_size 3\
                                                       --num_attention_layers 3  --num_attention_filters 50\
                                                       --conv_bn_relu_type_bottleneck "SqueezeExciteConv2dNormLeakyReLU" \
                                                       --conv_bn_relu_type_processing "SqueezeExciteConv2dNormLeakyReLU" \
