@@ -7,11 +7,11 @@ import os
 import numpy as np
 import time
 
-from storage_utils import save_statistics
+from storage_utils import save_statistics, save_json_file
 
 class ExperimentBuilder(nn.Module):
     def __init__(self, network_model, experiment_name, num_epochs, train_data, val_data,
-                 test_data, weight_decay_coefficient, device, continue_from_epoch=-1):
+                 test_data, weight_decay_coefficient, device, config_dict, continue_from_epoch=-1):
         """
         Initializes an ExperimentBuilder object. Such an object takes care of running training and evaluation of a deep net
         on a given dataset. It also takes care of saving per epoch models and automatically inferring the best val model
@@ -62,6 +62,8 @@ class ExperimentBuilder(nn.Module):
 
         if not os.path.exists(self.experiment_saved_models):
             os.mkdir(self.experiment_saved_models)  # create the experiment saved models directory
+
+        save_json_file(experiment_log_filepath=self.experiment_logs, filename='config.json', stats_dict=config_dict)
 
         self.num_epochs = num_epochs
         self.criterion = nn.CrossEntropyLoss().to(self.device)  # send the loss computation to the GPU
