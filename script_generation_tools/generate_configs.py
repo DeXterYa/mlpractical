@@ -16,7 +16,8 @@ config = namedtuple('config', ['experiment_name',
                                'conv_bn_relu_type_processing'])
 
 experiment_templates_json_dir = '../experiment_config_temp/'
-experiment_config_target_json_dir = '../cluster_experiment_scripts'
+experiment_config_cluster_scripts_dir = '../cluster_experiment_scripts'
+experiment_config_local_scripts_dir = '../local_experiment_scripts'
 
 config_list = [
 
@@ -127,8 +128,9 @@ config_list = [
                       conv_bn_relu_type_processing='Conv2dNormLeakyReLU'),
                ]
 
-if not os.path.exists(experiment_config_target_json_dir):
-    os.makedirs(experiment_config_target_json_dir)
+for storage_dir in [experiment_config_cluster_scripts_dir, experiment_config_local_scripts_dir]:
+    if not os.path.exists(storage_dir):
+        os.makedirs(storage_dir)
 
 
 def fill_template(script_text, config):
@@ -151,6 +153,11 @@ def write_text_to_file(text, filepath):
 
 for subdir, dir, files in os.walk(experiment_templates_json_dir):
     for template_file in files:
+        if 'local' in template_file:
+            target_dir = experiment_config_local_scripts_dir
+        else:
+            target_dir = experiment_config_cluster_scripts_dir
+
         filepath = os.path.join(subdir, template_file)
 
         for config in config_list:
@@ -160,7 +167,7 @@ for subdir, dir, files in os.walk(experiment_templates_json_dir):
             cluster_script_text = fill_template(script_text=loaded_template_file,
                                                 config=config_dict)
 
-            cluster_script_name = '{}/{}_{}.sh'.format(experiment_config_target_json_dir,
+            cluster_script_name = '{}/{}_{}.sh'.format(target_dir,
                                                        template_file.replace(".sh", ""),
                                                        config.experiment_name)
             cluster_script_name = os.path.abspath(cluster_script_name)

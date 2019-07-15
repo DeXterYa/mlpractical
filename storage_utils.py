@@ -1,7 +1,7 @@
 import pickle
 import os
 import csv
-
+import json
 
 def save_to_stats_pkl_file(experiment_log_filepath, filename, stats_dict):
     summary_filename = os.path.join(experiment_log_filepath, filename)
@@ -15,6 +15,21 @@ def load_from_stats_pkl_file(experiment_log_filepath, filename):
         stats = pickle.load(file_reader)
 
     return stats
+
+def save_json_file(experiment_log_filepath, filename, stats_dict):
+    storage_path = os.path.join(experiment_log_filepath, filename)
+
+    try:
+        with open(storage_path, 'w+') as write_json:
+            json.dump(stats_dict, write_json)
+            return True
+    except:
+        return False
+
+def load_json_file(load_filepath):
+    with open(load_filepath, "r") as read_json:
+        dict_object = json.load(read_json)
+        return dict_object
 
 
 def save_statistics(experiment_log_dir, filename, stats_dict, current_epoch, continue_from_mode=False, save_full_dict=False):
