@@ -613,7 +613,7 @@ class BatchRelationalModule(nn.Module):
         self.coord_tensor = torch.stack(self.coord_tensor, dim=0).unsqueeze(0)
 
         if self.coord_tensor.shape[0] != out_img.shape[0]:
-            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])  # Don't understand
+            self.coord_tensor = self.coord_tensor[0].unsqueeze(0).repeat([out_img.shape[0], 1, 1])
 
         out_img = torch.cat([out_img, self.coord_tensor], dim=2)
 

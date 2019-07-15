@@ -250,14 +250,14 @@ print('generation completed')
 #
 #
 #
-#                config(experiment_name='experiment_4_1', dataset_name='cifar10', seed=0,
-#                       attention_pooling_type='avg_pool',
-#                       attention_network_type='relational_network',
-#                       attention_pooling_size=7,
-#                       num_attention_layers=3,
-#                       num_attention_filters=50,
-#                       conv_bn_relu_type_bottleneck='SqueezeExciteConv2dNormLeakyReLU',
-#                       conv_bn_relu_type_processing='SqueezeExciteConv2dNormLeakyReLU'),
+               # config(experiment_name='experiment_4_1', dataset_name='cifar10', seed=0,
+               #        attention_pooling_type='avg_pool',
+               #        attention_network_type='relational_network',
+               #        attention_pooling_size=7,
+               #        num_attention_layers=3,
+               #        num_attention_filters=50,
+               #        conv_bn_relu_type_bottleneck='SqueezeExciteConv2dNormLeakyReLU',
+               #        conv_bn_relu_type_processing='SqueezeExciteConv2dNormLeakyReLU'),
 #                config(experiment_name='experiment_4_2', dataset_name='cifar10', seed=1,
 #                       attention_pooling_type='avg_pool',
 #                       attention_network_type='relational_network',
