@@ -37,12 +37,14 @@ for seed in range(0, 3):
                                     temp_conf = config(
                                         experiment_name='experiment_{dataset_name}_{conv_bn_relu_type_bottleneck}_'
                                                         '{conv_bn_relu_type_processing}_{attention_pooling_type}_'
-                                                        '{num_attention_layers}_{attention_pooling_size}_'
+                                                        '{attention_network_type}_{num_attention_layers}_{attention_pooling_size}_'
                                                         '{num_attention_filters}_{seed}_{exp_idx}'.format(
                                             dataset_name=dataset_name,
                                             conv_bn_relu_type_bottleneck=conv_bn_relu_type_bottleneck,
                                             conv_bn_relu_type_processing=conv_bn_relu_type_processing,
-                                            attention_pooling_type=attention_pooling_type, attention_pooling_size=attention_pooling_size,
+                                            attention_pooling_type=attention_pooling_type,
+                                            attention_network_type=attention_network_type,
+                                            attention_pooling_size=attention_pooling_size,
                                         num_attention_layers=num_attention_layers,
                                         num_attention_filters=num_attention_filters, seed=seed, exp_idx=exp_idx),
 
