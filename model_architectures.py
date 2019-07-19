@@ -998,7 +998,7 @@ class HyperConvLayer(nn.Module):
                 out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
 
             self.layer_dict['fcc_output'] = nn.Linear(in_features=out.shape[-1],
-                                                      out_features=self.weight_parameters.view(-1).shape[0],
+                                                      out_features=self.num_weights,
                                                       bias=True)
             attention_regions = self.layer_dict['fcc_output'].forward(out)
 
