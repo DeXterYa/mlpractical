@@ -866,3 +866,84 @@ class CIFAR100(CIFAR10):
     test_list = [
         ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
     ]
+
+
+class MixedImageCIFAR100(MixedImageCIFAR10):
+    """`CIFAR100 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
+
+    This is a subclass of the `CIFAR10` Dataset.
+    """
+    base_folder = 'cifar-100-python'
+    url = "https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz"
+    filename = "cifar-100-python.tar.gz"
+    tgz_md5 = 'eb9058c3a382ffc7106e4002c42a8d85'
+    train_list = [
+        ['train', '16019d7e3df5f24257cddd939b257f8d'],
+    ]
+
+    test_list = [
+        ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
+    ]
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        import datetime
+
+        if index == self.__len__() - 1:
+            indexes = np.arange(0, len(self.data))
+            rng = np.random.RandomState(datetime.datetime.now().second)
+            rng.shuffle(indexes)
+            self.data = self.data[indexes]
+
+        indexes = [i for i in range(index*self.num_images_per_input,
+                                    index*self.num_images_per_input+self.num_images_per_input)]
+        img, target = self.data[indexes], self.labels[indexes]
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        targets = torch.zeros(100)
+
+        weight_of_each_image = 1. / self.num_images_per_input
+
+        for label in target:
+            targets[label] += weight_of_each_image
+
+        # Original images are 32 * 32
+        # We just implement num_images_per_input == 4 here
+
+        images = []
+        for x in range(0, self.num_images_per_input):
+            image = Image.fromarray(img[x])
+
+            # apply transform for mixing here
+
+            transform = transforms.Compose([
+                transforms.RandomCrop(16),
+                transforms.ToTensor()
+            ])
+            image = transform(image)
+            images.append(image)
+
+        image_1 = torch.cat((images[0], images[1]), 1)
+        image_2 = torch.cat((images[2], images[3]), 1)
+
+        image_output = torch.cat((image_1, image_2), 2)
+
+        image_output = image_output.numpy().transpose((1, 2, 0))
+
+        image_output = Image.fromarray(image_output.astype('uint8'))
+
+
+        if self.transform is not None:
+            image_output = self.transform(image_output)
+
+        if self.target_transform is not None:
+            targets = self.target_transform(targets)
+
+        return image_output, targets
