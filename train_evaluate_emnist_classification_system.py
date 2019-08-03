@@ -50,6 +50,34 @@ elif args.dataset_name == 'cifar10':
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
     num_output_classes = 10
 
+
+elif args.dataset_name == 'cifar10_mixed':
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+    trainset = data_providers.MixedImageCIFAR10(root='data', set_name='train', download=True, transform=transform_train, num_images_per_input=args.num_images_per_input)
+    train_data = torch.utils.data.DataLoader(trainset, batch_size=100, shuffle=True, num_workers=2)
+
+    valset = data_providers.CIFAR10(root='data', set_name='val', download=True, transform=transform_test)
+    val_data = torch.utils.data.DataLoader(valset, batch_size=100, shuffle=False, num_workers=2)
+
+    testset = data_providers.CIFAR10(root='data', set_name='test', download=True, transform=transform_test)
+    test_data = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
+
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    num_output_classes = 10
+
+
+
 elif args.dataset_name == 'cifar100':
     transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),

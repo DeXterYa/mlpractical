@@ -105,8 +105,8 @@ class ExperimentBuilder(nn.Module):
         """
         self.train()  # sets model to training mode (in case batch normalization or other methods have different procedures for training and evaluation)
 
-        if len(y.shape) > 1:
-            y = np.argmax(y, axis=1)  # convert one hot encoded labels to single integer labels
+        # if len(y.shape) > 1:
+        #     y = np.argmax(y, axis=1)  # convert one hot encoded labels to single integer labels
 
         #print(type(x))
 
@@ -118,15 +118,18 @@ class ExperimentBuilder(nn.Module):
         y = y.to(self.device)
 
         out = self.model.forward(x)  # forward the data in the model
-        loss = F.cross_entropy(input=out, target=y)  # compute loss
+        # loss = F.cross_entropy(input=out, target=y)  # compute loss
 
+        loss = torch.sum(- y * F.log_softmax(out, -1), -1)
+        mean_loss = loss.mean()
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
-        loss.backward()  # backpropagate to compute gradients for current iter loss
+        mean_loss.backward()  # backpropagate to compute gradients for current iter loss
 
         self.optimizer.step()  # update network parameters
-        _, predicted = torch.max(out.data, 1)  # get argmax of predictions
-        accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
-        return loss.data.detach().cpu().numpy(), accuracy
+        # _, predicted = torch.max(out.data, 1)  # get argmax of predictions
+        # accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
+        accuracy = 0
+        return mean_loss.data.detach().cpu().numpy(), accuracy
 
     def run_evaluation_iter(self, x, y):
         """
@@ -145,7 +148,7 @@ class ExperimentBuilder(nn.Module):
         x = x.to(self.device)
         y = y.to(self.device)
         out = self.model.forward(x)  # forward the data in the model
-        loss = F.cross_entropy(out, y)  # compute loss
+        loss = F.cross_entropy(input=out, target=y)
         _, predicted = torch.max(out.data, 1)  # get argmax of predictions
         accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
         return loss.data.detach().cpu().numpy(), accuracy

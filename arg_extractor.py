@@ -78,7 +78,8 @@ def get_args():
                         help='')
     parser.add_argument('--conv_bn_relu_type_processing', nargs="?", type=str, default='SqueezeExciteConv2dNormLeakyReLU',
                         help='')
-
+    parser.add_argument('--num_images_per_input', nargs="?", type=int, default=1,
+                        help='')
 
     args = parser.parse_args()
     gpu_id = str(args.gpu_id)
