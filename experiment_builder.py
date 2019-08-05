@@ -138,12 +138,13 @@ class ExperimentBuilder(nn.Module):
 
         out = self.model.forward(x)  # forward the data in the model
         # loss = F.cross_entropy(input=out, target=y)  # compute loss
+        if len(y.shape) == 1:
+            y_one_hot = torch.empty(out.shape, device=out.device)
 
-        # y_one_hot = torch.empty(out.shape, device=out.device)
-        #
-        # # In your for loop
-        # y_one_hot.zero_()
-        # y_one_hot.scatter_(1, y.view(out.shape[0], 1), 1)
+        # In your for loop
+            y_one_hot.zero_()
+            y_one_hot.scatter_(1, y.view(out.shape[0], 1), 1)
+            y = y_one_hot
 
         loss = loss_fn_kd(out, y)
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
