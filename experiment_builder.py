@@ -1,13 +1,29 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import tqdm
 import os
-import numpy as np
 import time
 
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import tqdm
+
 from storage_utils import save_statistics, save_json_file
+
+def loss_fn_kd(outputs, soft_targets):
+    """
+    Compute the knowledge-distillation (KD) loss given outputs, labels.
+    "Hyperparameters": temperature and alpha
+    NOTE: the KL Divergence for PyTorch comparing the softmaxs of teacher
+    and student expects the input tensor to be log probabilities! See Issue #2
+    """
+    alpha = 0.5
+    T = 5
+    KD_loss = nn.KLDivLoss(reduction='batchmean')(F.log_softmax(outputs/T, dim=1),
+                             F.softmax(soft_targets/T, dim=1)) * (T * T)
+
+    return KD_loss
+
 
 class ExperimentBuilder(nn.Module):
     def __init__(self, network_model, experiment_name, num_epochs, train_data, val_data,
@@ -38,7 +54,7 @@ class ExperimentBuilder(nn.Module):
             self.model = nn.DataParallel(module=self.model)
         else:
             self.model.to(self.device)  # sends the model from the cpu to the gpu
-          # re-initialize network parameters
+        # re-initialize network parameters
         self.train_data = train_data
         self.val_data = val_data
         self.test_data = test_data
@@ -96,6 +112,8 @@ class ExperimentBuilder(nn.Module):
 
         return total_num_params
 
+
+
     def run_train_iter(self, x, y):
         """
         Receives the inputs and targets for the model and runs a training iteration. Returns loss and accuracy metrics.
@@ -108,28 +126,34 @@ class ExperimentBuilder(nn.Module):
         # if len(y.shape) > 1:
         #     y = np.argmax(y, axis=1)  # convert one hot encoded labels to single integer labels
 
-        #print(type(x))
+        # print(type(x))
 
         if type(x) is np.ndarray:
             x, y = torch.Tensor(x).float().to(device=self.device), torch.Tensor(y).long().to(
-            device=self.device)  # send data to device as torch tensors
+                device=self.device)  # send data to device as torch tensors
 
         x = x.to(self.device)
         y = y.to(self.device)
 
+
         out = self.model.forward(x)  # forward the data in the model
         # loss = F.cross_entropy(input=out, target=y)  # compute loss
 
-        loss = torch.sum(- y * F.log_softmax(out, -1), -1)
-        mean_loss = loss.mean()
+        # y_one_hot = torch.empty(out.shape, device=out.device)
+        #
+        # # In your for loop
+        # y_one_hot.zero_()
+        # y_one_hot.scatter_(1, y.view(out.shape[0], 1), 1)
+
+        loss = loss_fn_kd(out, y)
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
-        mean_loss.backward()  # backpropagate to compute gradients for current iter loss
+        loss.backward()  # backpropagate to compute gradients for current iter loss
 
         self.optimizer.step()  # update network parameters
         # _, predicted = torch.max(out.data, 1)  # get argmax of predictions
         # accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
         accuracy = 0
-        return mean_loss.data.detach().cpu().numpy(), accuracy
+        return loss.data.detach().cpu().numpy(), accuracy
 
     def run_evaluation_iter(self, x, y):
         """
@@ -143,11 +167,21 @@ class ExperimentBuilder(nn.Module):
             y = np.argmax(y, axis=1)  # convert one hot encoded labels to single integer labels
         if type(x) is np.ndarray:
             x, y = torch.Tensor(x).float().to(device=self.device), torch.Tensor(y).long().to(
-            device=self.device)  # convert data to pytorch tensors and send to the computation device
+                device=self.device)  # convert data to pytorch tensors and send to the computation device
 
         x = x.to(self.device)
         y = y.to(self.device)
+
+
+
         out = self.model.forward(x)  # forward the data in the model
+
+        # y_one_hot = torch.zeros(out.shape, device=out.device)
+        #
+        # # In your for loop
+        # y_one_hot.zero_()
+        # y_one_hot.scatter_(1, y, 1)
+
         loss = F.cross_entropy(input=out, target=y)
         _, predicted = torch.max(out.data, 1)  # get argmax of predictions
         accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
@@ -218,7 +252,8 @@ class ExperimentBuilder(nn.Module):
             total_losses['curr_epoch'].append(epoch_idx)
             save_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv',
                             stats_dict=total_losses, current_epoch=i,
-                            continue_from_mode=True if (self.starting_epoch != 0 or i > 0) else False) # save statistics to stats file.
+                            continue_from_mode=True if (
+                                        self.starting_epoch != 0 or i > 0) else False)  # save statistics to stats file.
 
             # load_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv') # How to load a csv file if you need to
 
