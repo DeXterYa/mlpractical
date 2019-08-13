@@ -9,12 +9,15 @@ import pickle
 import gzip
 import numpy as np
 import os
+
 DEFAULT_SEED = 20112018
+
 from PIL import Image
 import os
 import os.path
 import numpy as np
 import sys
+
 if sys.version_info[0] == 2:
     import cPickle as pickle
 else:
@@ -26,6 +29,7 @@ import torch
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
+
 
 class DataProvider(object):
     """Generic data provider."""
@@ -148,6 +152,7 @@ class DataProvider(object):
         self._curr_batch += 1
         return inputs_batch, targets_batch
 
+
 class MNISTDataProvider(DataProvider):
     """Data provider for MNIST handwritten digit images."""
 
@@ -180,7 +185,7 @@ class MNISTDataProvider(DataProvider):
         data_path = os.path.join(
             "data", 'mnist-{0}.npz'.format(which_set))
         assert os.path.isfile(data_path), (
-            'Data file does not exist at expected path: ' + data_path
+                'Data file does not exist at expected path: ' + data_path
         )
         # load data from compressed numpy file
         loaded = np.load(data_path)
@@ -214,6 +219,7 @@ class MNISTDataProvider(DataProvider):
         one_of_k_targets[range(int_targets.shape[0]), int_targets] = 1
         return one_of_k_targets
 
+
 class EMNISTDataProvider(DataProvider):
     """Data provider for EMNIST handwritten digit images."""
 
@@ -246,7 +252,7 @@ class EMNISTDataProvider(DataProvider):
         data_path = os.path.join(
             "data", 'emnist-{0}.npz'.format(which_set))
         assert os.path.isfile(data_path), (
-            'Data file does not exist at expected path: ' + data_path
+                'Data file does not exist at expected path: ' + data_path
         )
         # load data from compressed numpy file
         loaded = np.load(data_path)
@@ -254,7 +260,7 @@ class EMNISTDataProvider(DataProvider):
         inputs, targets = loaded['inputs'], loaded['targets']
         inputs = inputs.astype(np.float32)
         if flatten:
-            inputs = np.reshape(inputs, newshape=(-1, 28*28))
+            inputs = np.reshape(inputs, newshape=(-1, 28 * 28))
         else:
             inputs = np.reshape(inputs, newshape=(-1, 1, 28, 28))
         inputs = inputs / 255.0
@@ -314,7 +320,7 @@ class MetOfficeDataProvider(DataProvider):
         data_path = os.path.join(
             os.environ['DATASET_DIR'], 'HadSSP_daily_qc.txt')
         assert os.path.isfile(data_path), (
-            'Data file does not exist at expected path: ' + data_path
+                'Data file does not exist at expected path: ' + data_path
         )
         raw = np.loadtxt(data_path, skiprows=3, usecols=range(2, 32))
         assert window_size > 1, 'window_size must be at least 2.'
@@ -336,6 +342,7 @@ class MetOfficeDataProvider(DataProvider):
         targets = windowed[:, -1]
         super(MetOfficeDataProvider, self).__init__(
             inputs, targets, batch_size, max_num_batches, shuffle_order, rng)
+
 
 class CCPPDataProvider(DataProvider):
 
@@ -362,7 +369,7 @@ class CCPPDataProvider(DataProvider):
         data_path = os.path.join(
             os.environ['DATASET_DIR'], 'ccpp_data.npz')
         assert os.path.isfile(data_path), (
-            'Data file does not exist at expected path: ' + data_path
+                'Data file does not exist at expected path: ' + data_path
         )
         # check a valid which_set was provided
         assert which_set in ['train', 'valid'], (
@@ -420,8 +427,6 @@ class AugmentedMNISTDataProvider(MNISTDataProvider):
             AugmentedMNISTDataProvider, self).next()
         transformed_inputs_batch = self.transformer(inputs_batch, self.rng)
         return transformed_inputs_batch, targets_batch
-
-
 
 
 class CIFAR10(data.Dataset):
@@ -616,6 +621,7 @@ class CIFAR10(data.Dataset):
         fmt_str += '{0}{1}'.format(tmp, self.target_transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
         return fmt_str
 
+
 class MixedImageCIFAR10(data.Dataset):
     """`CIFAR10 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
 
@@ -760,8 +766,8 @@ class MixedImageCIFAR10(data.Dataset):
             rng.shuffle(indexes)
             self.data = self.data[indexes]
 
-        indexes = [i for i in range(index*self.num_images_per_input,
-                                    index*self.num_images_per_input+self.num_images_per_input)]
+        indexes = [i for i in range(index * self.num_images_per_input,
+                                    index * self.num_images_per_input + self.num_images_per_input)]
         img, target = self.data[indexes], self.labels[indexes]
 
         # doing this so that it is consistent with all other datasets
@@ -991,9 +997,10 @@ class NumImageAgnosticMixedImageCIFAR10(data.Dataset):
 
         rng = np.random.RandomState(index)
 
-        num_images_per_input = rng.choice(a=[2, 4, 6, 8, 10], size=(1))[0]
+        num_images_per_input = rng.choice(a=[1, 2, 4], size=(1))[0]
         indexes = rng.randint(low=0, high=self.data.shape[0], size=num_images_per_input)
         img, target = self.data[indexes], self.labels[indexes]
+
 
         # doing this so that it is consistent with all other datasets
         # to return a PIL Image
@@ -1020,10 +1027,17 @@ class NumImageAgnosticMixedImageCIFAR10(data.Dataset):
             image = transform(image)
             images.append(image)
 
-        images = torch.stack(images, dim=0).view(2, -1, images[0].shape[0], images[0].shape[1], images[0].shape[2])
+        images += [torch.zeros(image.shape) for i in range(4 - num_images_per_input)]
+
+        images = torch.stack(images, dim=0).view(4, -1,
+                                                 images[0].shape[0],
+                                                 images[0].shape[1],
+                                                 images[0].shape[2])
+
         images = torch.cat(images.unbind(0), dim=2)
         images = torch.cat(images.unbind(0), dim=2)
         images = transforms.ToPILImage()(images)
+
 
         if self.transform is not None:
             images = self.transform(images)
@@ -1127,8 +1141,8 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
             rng.shuffle(indexes)
             self.data = self.data[indexes]
 
-        indexes = [i for i in range(index*self.num_images_per_input,
-                                    index*self.num_images_per_input+self.num_images_per_input)]
+        indexes = [i for i in range(index * self.num_images_per_input,
+                                    index * self.num_images_per_input + self.num_images_per_input)]
         img, target = self.data[indexes], self.labels[indexes]
 
         # doing this so that it is consistent with all other datasets
@@ -1165,7 +1179,6 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
 
         image_output = Image.fromarray(image_output.astype('uint8'))
 
-
         if self.transform is not None:
             image_output = self.transform(image_output)
 
@@ -1173,3 +1186,88 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
             targets = self.target_transform(targets)
 
         return image_output, targets
+
+class NumImageAgnosticMixedImageCIFAR100(MixedImageCIFAR10):
+    """`CIFAR100 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
+
+    This is a subclass of the `CIFAR10` Dataset.
+    """
+    base_folder = 'cifar-100-python'
+    url = "https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz"
+    filename = "cifar-100-python.tar.gz"
+    tgz_md5 = 'eb9058c3a382ffc7106e4002c42a8d85'
+
+    train_list = [
+        ['train', '16019d7e3df5f24257cddd939b257f8d']
+    ]
+
+    test_list = [
+        ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc']
+    ]
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        import datetime
+
+        if index == self.__len__() - 1:
+            indexes = np.arange(0, len(self.data))
+            rng = np.random.RandomState(datetime.datetime.now().second)
+            rng.shuffle(indexes)
+            self.data = self.data[indexes]
+
+        rng = np.random.RandomState(index)
+
+        num_images_per_input = rng.choice(a=[1, 2, 4], size=(1))[0]
+        indexes = rng.randint(low=0, high=self.data.shape[0], size=num_images_per_input)
+        img, target = self.data[indexes], self.labels[indexes]
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        targets = torch.zeros(100)
+
+        weight_of_each_image = 1. / num_images_per_input
+
+        for label in target:
+            targets[label] += weight_of_each_image
+
+        # Original images are 32 * 32
+        # We just implement num_images_per_input == 4 here
+
+        images = []
+        for x in range(0, num_images_per_input):
+            image = Image.fromarray(img[x])
+
+            # apply transform for mixing here
+
+            transform = transforms.Compose([
+                transforms.RandomCrop(24),
+                transforms.ToTensor()
+            ])
+            image = transform(image)
+            images.append(image)
+
+        images += [torch.zeros(image.shape) for i in range(4 - num_images_per_input)]
+
+        images = torch.stack(images, dim=0).view(4, -1,
+                                                 images[0].shape[0],
+                                                 images[0].shape[1],
+                                                 images[0].shape[2])
+
+        images = torch.cat(images.unbind(0), dim=2)
+        images = torch.cat(images.unbind(0), dim=2)
+        images = transforms.ToPILImage()(images)
+
+        if self.transform is not None:
+            images = self.transform(images)
+
+        if self.target_transform is not None:
+            targets = self.target_transform(targets)
+
+        return images, targets
+

@@ -1,3 +1,5 @@
+from torch.utils.data import DataLoader
+
 import data_providers as data_providers
 import numpy as np
 from arg_extractor import get_args
@@ -39,7 +41,7 @@ elif args.dataset_name == 'cifar10':
     ])
 
     trainset = data_providers.CIFAR10(root='data', set_name='train', download=True, transform=transform_train)
-    train_data = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+    train_data = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     valset = data_providers.CIFAR10(root='data', set_name='val', download=True, transform=transform_test)
     val_data = torch.utils.data.DataLoader(valset, batch_size=batch_size, shuffle=False, num_workers=2)
@@ -63,7 +65,9 @@ elif args.dataset_name == 'cifar10_mixed':
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
-    trainset = data_providers.NumImageAgnosticMixedImageCIFAR10(root='data', set_name='train', download=True, transform=transform_train, num_images_per_input=args.num_images_per_input)
+    trainset = data_providers.NumImageAgnosticMixedImageCIFAR10(root='data', set_name='train', download=True,
+                                                                transform=transform_train,
+                                                                num_images_per_input=args.num_images_per_input)
     train_data = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     valset = data_providers.CIFAR10(root='data', set_name='val', download=True, transform=transform_test)
@@ -103,7 +107,6 @@ elif args.dataset_name == 'cifar100':
 
 elif args.dataset_name == 'cifar100_mixed':
     transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -114,7 +117,9 @@ elif args.dataset_name == 'cifar100_mixed':
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
-    trainset = data_providers.MixedImageCIFAR100(root='data', set_name='train', download=True, transform=transform_train, num_images_per_input=args.num_images_per_input)
+    trainset = data_providers.NumImageAgnosticMixedImageCIFAR100(root='data', set_name='train', download=True,
+                                                                 transform=transform_train,
+                                                                 num_images_per_input=args.num_images_per_input)
     train_data = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     valset = data_providers.CIFAR100(root='data', set_name='val', download=True, transform=transform_test)

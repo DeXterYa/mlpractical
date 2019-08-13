@@ -113,7 +113,6 @@ class ExperimentBuilder(nn.Module):
         return total_num_params
 
 
-
     def run_train_iter(self, x, y):
         """
         Receives the inputs and targets for the model and runs a training iteration. Returns loss and accuracy metrics.
@@ -172,8 +171,6 @@ class ExperimentBuilder(nn.Module):
 
         x = x.to(self.device)
         y = y.to(self.device)
-
-
 
         out = self.model.forward(x)  # forward the data in the model
 
@@ -255,8 +252,6 @@ class ExperimentBuilder(nn.Module):
                             stats_dict=total_losses, current_epoch=i,
                             continue_from_mode=True if (
                                         self.starting_epoch != 0 or i > 0) else False)  # save statistics to stats file.
-
-            # load_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv') # How to load a csv file if you need to
 
             out_string = "_".join(
                 ["{}_{:.4f}".format(key, np.mean(value)) for key, value in current_epoch_losses.items()])

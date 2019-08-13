@@ -931,7 +931,7 @@ class DenseNet(nn.Module):
     def forward(self, x):
         features = self.features(x)
         out = F.relu(features, inplace=True)
-        out = F.avg_pool2d(out, kernel_size=self.avgpool_size).view(
+        out = F.avg_pool2d(out, kernel_size=(out.shape[-2], out.shape[-1])).view(
             features.size(0), -1)
         out = self.classifier(out)
         return out
