@@ -893,7 +893,9 @@ class DenseNet(nn.Module):
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
 
         # First Convolution
+        self.num_attention_filters = num_attention_filters
         self.multi_image_size = multi_image_size
+        self.layer_dict = nn.ModuleDict()
         x = torch.zeros(input_shape)
         out = x
         self.features = nn.Sequential(OrderedDict([
@@ -937,7 +939,7 @@ class DenseNet(nn.Module):
                                                   out_features=num_classes)
 
         self.single_classifier = nn.Linear(num_features, num_classes)
-
+        self.classifier = nn.Linear(num_features, num_classes)
 
         self.avgpool_size = avgpool_size
 

@@ -149,7 +149,8 @@ custom_conv_net = DenseNet(
     num_init_feature=args.num_init_feature, drop_rate=args.drop_rate,
     conv_bn_relu_type_bottleneck=eval(args.conv_bn_relu_type_bottleneck),
     conv_bn_relu_type_processing=eval(args.conv_bn_relu_type_processing),
-    num_classes=num_output_classes
+    num_classes=num_output_classes,
+    multi_image_size= args.num_images_per_input
 )
 
 print('Building experiment', file=sys.stderr)

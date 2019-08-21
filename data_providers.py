@@ -11,6 +11,7 @@ import numpy as np
 import os
 DEFAULT_SEED = 20112018
 from PIL import Image
+import random
 import os
 import os.path
 import numpy as np
@@ -766,13 +767,24 @@ class MixedImageCIFAR10(data.Dataset):
 
         # doing this so that it is consistent with all other datasets
         # to return a PIL Image
-        targets = torch.zeros(10)
 
-        weight_of_each_image = 1. / self.num_images_per_input
 
-        for label in target:
-            targets[label] += weight_of_each_image
 
+        x_quest = torch.zeros(self.num_images_per_input)
+        idx_1 = random.randrange(0, self.num_images_per_input)
+        x_quest[idx_1] = 1
+
+        # weight_of_each_image = 1. / self.num_images_per_input
+        targets_multi = target[idx_1]
+        # for label in target:
+        #     targets[label] += weight_of_each_image
+
+
+        idx_2 = random.randrange(0, self.num_images_per_input)
+        targets_single = target[idx_2]
+
+        x_single = img[idx_2]
+        x_single = Image.fromarray(x_single)
         # Original images are 32 * 32
         # We just implement num_images_per_input == 4 here
 
@@ -801,11 +813,15 @@ class MixedImageCIFAR10(data.Dataset):
 
         if self.transform is not None:
             image_output = self.transform(image_output)
+            x_single = self.transform(x_single)
 
         if self.target_transform is not None:
-            targets = self.target_transform(targets)
+            targets_multi = self.target_transform(targets_multi)
+            targets_single = self.target_transform(targets_single)
 
-        return image_output, targets
+        return image_output, targets_multi, x_quest, x_single, targets_single
+
+#x_multi, y_multi, x_quest, x_single, y_single
 
     def __len__(self):
         return int(np.ceil(len(self.data) / self.num_images_per_input))
@@ -907,12 +923,34 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
 
         # doing this so that it is consistent with all other datasets
         # to return a PIL Image
-        targets = torch.zeros(100)
 
-        weight_of_each_image = 1. / self.num_images_per_input
 
-        for label in target:
-            targets[label] += weight_of_each_image
+
+        x_quest = torch.zeros(self.num_images_per_input)
+        idx_1 = random.randrange(0, self.num_images_per_input)
+        x_quest[idx_1] = 1
+
+        # weight_of_each_image = 1. / self.num_images_per_input
+        targets_multi = target[idx_1]
+        # for label in target:
+        #     targets[label] += weight_of_each_image
+
+
+        idx_2 = random.randrange(0, self.num_images_per_input)
+        targets_single = target[idx_2]
+
+        x_single = img[idx_2]
+        x_single = Image.fromarray(x_single)
+
+
+
+
+        # targets = torch.zeros(100)
+        #
+        # weight_of_each_image = 1. / self.num_images_per_input
+
+        # for label in target:
+        #     targets[label] += weight_of_each_image
 
         # Original images are 32 * 32
         # We just implement num_images_per_input == 4 here
@@ -942,8 +980,10 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
 
         if self.transform is not None:
             x_multi = self.transform(x_multi)
+            x_single = self.transform(x_single)
 
         if self.target_transform is not None:
-            y_multi = self.target_transform(targets)
+            targets_multi = self.target_transform(targets_multi)
+            targets_single = self.target_transform(targets_single)
 
-        return x_multi, y_multi, x_quest, x_single, y_single
+        return x_multi, targets_multi, x_quest, x_single, targets_single

@@ -126,11 +126,11 @@ class ExperimentBuilder(nn.Module):
         x_quest = x_quest.to(self.device)
         x_multi = x_multi.to(self.device)
         x_single = x_single.to(self.device)
-        y_multi = y_multi.to(self.device)
-        y_single = y_single.to(self.device)
+        y_multi = y_multi.long().to(self.device)
+        y_single = y_single.long().to(self.device)
 
-        out_multi_image_task = self.model.forward(x_image=x_multi, x_question=x_quest)
-        out_single_image_task = self.model.forward(x_image=x_single, x_question=None)  # forward the data in the model
+        out_multi_image_task = self.model.forward(x=x_multi, x_question=x_quest)
+        out_single_image_task = self.model.forward(x=x_single, x_question=None)  # forward the data in the model
         multi_image_loss = F.cross_entropy(input=out_multi_image_task, target=y_multi)  # compute loss
         single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
@@ -144,7 +144,7 @@ class ExperimentBuilder(nn.Module):
         multi_accuracy = self.compute_accuracy(logits=out_multi_image_task, targets=y_multi)
         single_accuracy = self.compute_accuracy(logits=out_single_image_task, targets=y_single)
 
-        return single_image_loss.data.detach().cpu().numpy(), multi_image_loss.data.detach().cpu().numpy(), single_accuracy, multi_accuracy
+        return mixed_loss.data.detach().cpu().numpy(), single_accuracy, multi_accuracy
 
     def run_evaluation_iter(self, x_single, y_single):
         """
@@ -155,13 +155,13 @@ class ExperimentBuilder(nn.Module):
         """
         self.eval()  # sets the system to validation mode
         if type(x_single) is np.ndarray:
-            x_quest, x_multi, x_single, y_multi, y_single = torch.Tensor(x_single).float().to(
+            x_single, y_single = torch.Tensor(x_single).float().to(
                 self.device), torch.Tensor(y_single).long().to(self.device)  # send data to device as torch tensors
 
         x_single = x_single.to(self.device)
-        y_single = y_single.to(self.device)
+        y_single = y_single.long().to(self.device)
 
-        out_single_image_task = self.model.forward(x_image=x_single,
+        out_single_image_task = self.model.forward(x=x_single,
                                                       x_question=None)  # forward the data in the model
         single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
@@ -206,19 +206,20 @@ class ExperimentBuilder(nn.Module):
         Runs experiment train and evaluation iterations, saving the model and best val model and val model accuracy after each epoch
         :return: The summary current_epoch_losses from starting epoch to total_epochs.
         """
-        total_losses = {"train_acc": [], "train_loss": [], "val_acc": [],
+        total_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss": [], "val_acc": [],
                         "val_loss": [], "curr_epoch": []}  # initialize a dict to keep the per-epoch metrics
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()
-            current_epoch_losses = {"train_acc": [], "train_loss": [], "val_acc": [], "val_loss": []}
+            current_epoch_losses = {"train_acc_single": [],"train_acc_multi": [], "train_loss": [], "val_acc": [], "val_loss": []}
 
             with tqdm.tqdm(total=len(self.train_data)) as pbar_train:  # create a progress bar for training
-                for idx, (x, y) in enumerate(self.train_data):  # get data batches
-                    loss, accuracy = self.run_train_iter(x=x, y=y)  # take a training iter step
+                for idx, (x_multi, y_multi, x_quest, x_single, y_single) in enumerate(self.train_data):  # get data batches
+                    loss, single_accuracy, multi_accuracy = self.run_train_iter(x_quest, x_multi, x_single, y_multi, y_single)  # take a training iter step
                     current_epoch_losses["train_loss"].append(loss)  # add current iter loss to the train loss list
-                    current_epoch_losses["train_acc"].append(accuracy)  # add current iter acc to the train acc list
+                    current_epoch_losses["train_acc_single"].append(single_accuracy)  # add current iter acc to the train acc list
+                    current_epoch_losses["train_acc_multi"].append(multi_accuracy)
                     pbar_train.update(1)
-                    pbar_train.set_description("loss: {:.4f}, accuracy: {:.4f}".format(loss, accuracy))
+                    pbar_train.set_description("loss: {:.4f}, single_accuracy: {:.4f}, multi_accuracy: {:.4f}".format(loss, single_accuracy, multi_accuracy))
 
             with tqdm.tqdm(total=len(self.val_data)) as pbar_val:  # create a progress bar for validation
                 for x, y in self.val_data:  # get data batches
@@ -267,8 +268,8 @@ class ExperimentBuilder(nn.Module):
         current_epoch_losses = {"test_acc": [], "test_loss": []}  # initialize a statistics dict
         with tqdm.tqdm(total=len(self.test_data)) as pbar_test:  # ini a progress bar
             for x, y in self.test_data:  # sample batch
-                loss, accuracy = self.run_evaluation_iter(x=x,
-                                                          y=y)  # compute loss and accuracy by running an evaluation step
+                loss, accuracy = self.run_evaluation_iter(x_single=x,
+                                                          y_single=y)  # compute loss and accuracy by running an evaluation step
                 current_epoch_losses["test_loss"].append(loss)  # save test loss
                 current_epoch_losses["test_acc"].append(accuracy)  # save test accuracy
                 pbar_test.update(1)  # update progress bar status
