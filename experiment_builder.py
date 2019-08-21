@@ -10,20 +10,6 @@ import tqdm
 
 from storage_utils import save_statistics, save_json_file
 
-def loss_fn_kd(outputs, soft_targets):
-    """
-    Compute the knowledge-distillation (KD) loss given outputs, labels.
-    "Hyperparameters": temperature and alpha
-    NOTE: the KL Divergence for PyTorch comparing the softmaxs of teacher
-    and student expects the input tensor to be log probabilities! See Issue #2
-    """
-    alpha = 0.5
-    T = 5
-    KD_loss = nn.KLDivLoss(reduction='batchmean')(F.log_softmax(outputs/T, dim=1),
-                             F.softmax(soft_targets/T, dim=1)) * (T * T)
-
-    return KD_loss
-
 
 class ExperimentBuilder(nn.Module):
     def __init__(self, network_model, experiment_name, num_epochs, train_data, val_data,
@@ -112,9 +98,12 @@ class ExperimentBuilder(nn.Module):
 
         return total_num_params
 
+    def compute_accuracy(self, logits, targets):
+        _, logits = torch.max(logits.data, 1)  # get argmax of predictions
+        accuracy = np.mean(list(logits.eq(targets.data).cpu()))  # compute accuracy
+        return accuracy
 
-
-    def run_train_iter(self, x, y):
+    def run_train_iter(self, x_quest, x_multi, x_single, y_multi, y_single):
         """
         Receives the inputs and targets for the model and runs a training iteration. Returns loss and accuracy metrics.
         :param x: The inputs to the model. A numpy array of shape batch_size, channels, height, width
@@ -128,34 +117,36 @@ class ExperimentBuilder(nn.Module):
 
         # print(type(x))
 
-        if type(x) is np.ndarray:
-            x, y = torch.Tensor(x).float().to(device=self.device), torch.Tensor(y).long().to(
-                device=self.device)  # send data to device as torch tensors
+        if type(x_multi) is np.ndarray:
+            x_quest, x_multi, x_single, y_multi, y_single = torch.Tensor(x_quest).float().to(
+                device=self.device), torch.Tensor(x_multi).float().to(
+                device=self.device), torch.Tensor(x_single).float().to(self.device), torch.Tensor(y_multi).long().to(
+                self.device), torch.Tensor(y_single).long().to(self.device)  # send data to device as torch tensors
 
-        x = x.to(self.device)
-        y = y.to(self.device)
+        x_quest = x_quest.to(self.device)
+        x_multi = x_multi.to(self.device)
+        x_single = x_single.to(self.device)
+        y_multi = y_multi.to(self.device)
+        y_single = y_single.to(self.device)
 
+        out_multi_image_task = self.model.forward(x_image=x_multi, x_question=x_quest)
+        out_single_image_task = self.model.forward(x_image=x_single, x_question=None)  # forward the data in the model
+        multi_image_loss = F.cross_entropy(input=out_multi_image_task, target=y_multi)  # compute loss
+        single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
-        out = self.model.forward(x)  # forward the data in the model
-        # loss = F.cross_entropy(input=out, target=y)  # compute loss
+        mixed_loss = multi_image_loss + single_image_loss
 
-        # y_one_hot = torch.empty(out.shape, device=out.device)
-        #
-        # # In your for loop
-        # y_one_hot.zero_()
-        # y_one_hot.scatter_(1, y.view(out.shape[0], 1), 1)
-
-        loss = loss_fn_kd(out, y)
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
-        loss.backward()  # backpropagate to compute gradients for current iter loss
+        mixed_loss.backward()  # backpropagate to compute gradients for current iter loss
 
         self.optimizer.step()  # update network parameters
-        # _, predicted = torch.max(out.data, 1)  # get argmax of predictions
-        # accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
-        accuracy = 0
-        return loss.data.detach().cpu().numpy(), accuracy
 
-    def run_evaluation_iter(self, x, y):
+        multi_accuracy = self.compute_accuracy(logits=out_multi_image_task, targets=y_multi)
+        single_accuracy = self.compute_accuracy(logits=out_single_image_task, targets=y_single)
+
+        return single_image_loss.data.detach().cpu().numpy(), multi_image_loss.data.detach().cpu().numpy(), single_accuracy, multi_accuracy
+
+    def run_evaluation_iter(self, x_single, y_single):
         """
         Receives the inputs and targets for the model and runs an evaluation iterations. Returns loss and accuracy metrics.
         :param x: The inputs to the model. A numpy array of shape batch_size, channels, height, width
@@ -163,29 +154,25 @@ class ExperimentBuilder(nn.Module):
         :return: the loss and accuracy for this batch
         """
         self.eval()  # sets the system to validation mode
-        if len(y.shape) > 1:
-            y = np.argmax(y, axis=1)  # convert one hot encoded labels to single integer labels
-        if type(x) is np.ndarray:
-            x, y = torch.Tensor(x).float().to(device=self.device), torch.Tensor(y).long().to(
-                device=self.device)  # convert data to pytorch tensors and send to the computation device
+        if type(x_single) is np.ndarray:
+            x_quest, x_multi, x_single, y_multi, y_single = torch.Tensor(x_single).float().to(
+                self.device), torch.Tensor(y_single).long().to(self.device)  # send data to device as torch tensors
 
-        x = x.to(self.device)
-        y = y.to(self.device)
+        x_single = x_single.to(self.device)
+        y_single = y_single.to(self.device)
+
+        out_single_image_task = self.model.forward(x_image=x_single,
+                                                      x_question=None)  # forward the data in the model
+        single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
 
+        self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
 
-        out = self.model.forward(x)  # forward the data in the model
+        self.optimizer.step()  # update network parameters
 
-        # y_one_hot = torch.zeros(out.shape, device=out.device)
-        #
-        # # In your for loop
-        # y_one_hot.zero_()
-        # y_one_hot.scatter_(1, y, 1)
+        single_accuracy = self.compute_accuracy(logits=out_single_image_task, targets=y_single)
 
-        loss = F.cross_entropy(input=out, target=y)
-        _, predicted = torch.max(out.data, 1)  # get argmax of predictions
-        accuracy = np.mean(list(predicted.eq(y.data).cpu()))  # compute accuracy
-        return loss.data.detach().cpu().numpy(), accuracy
+        return single_image_loss.data.detach().cpu().numpy(), single_accuracy
 
     def save_model(self, model_save_dir, model_save_name, model_idx, state):
         """
@@ -235,7 +222,7 @@ class ExperimentBuilder(nn.Module):
 
             with tqdm.tqdm(total=len(self.val_data)) as pbar_val:  # create a progress bar for validation
                 for x, y in self.val_data:  # get data batches
-                    loss, accuracy = self.run_evaluation_iter(x=x, y=y)  # run a validation iter
+                    loss, accuracy = self.run_evaluation_iter(x_single=x, y_single=y)  # run a validation iter
                     current_epoch_losses["val_loss"].append(loss)  # add current iter loss to val loss list.
                     current_epoch_losses["val_acc"].append(accuracy)  # add current iter acc to val acc lst.
                     pbar_val.update(1)  # add 1 step to the progress bar
@@ -253,7 +240,7 @@ class ExperimentBuilder(nn.Module):
             save_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv',
                             stats_dict=total_losses, current_epoch=i,
                             continue_from_mode=True if (
-                                        self.starting_epoch != 0 or i > 0) else False)  # save statistics to stats file.
+                                    self.starting_epoch != 0 or i > 0) else False)  # save statistics to stats file.
 
             # load_statistics(experiment_log_dir=self.experiment_logs, filename='summary.csv') # How to load a csv file if you need to
 

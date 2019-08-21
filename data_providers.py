@@ -924,7 +924,7 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
             # apply transform for mixing here
 
             transform = transforms.Compose([
-                transforms.RandomCrop(16),
+                transforms.RandomCrop(24),
                 transforms.ToTensor()
             ])
             image = transform(image)
@@ -937,13 +937,13 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
 
         image_output = image_output.numpy().transpose((1, 2, 0))
 
-        image_output = Image.fromarray(image_output.astype('uint8'))
+        x_multi = Image.fromarray(image_output.astype('uint8'))
 
 
         if self.transform is not None:
-            image_output = self.transform(image_output)
+            x_multi = self.transform(x_multi)
 
         if self.target_transform is not None:
-            targets = self.target_transform(targets)
+            y_multi = self.target_transform(targets)
 
-        return image_output, targets
+        return x_multi, y_multi, x_quest, x_single, y_single

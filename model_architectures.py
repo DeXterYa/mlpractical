@@ -201,6 +201,7 @@ class WeightAttentionalConvLayer(nn.Module):
         out = out.view([out.shape[0]] + list(out.shape[2:]))
         return out
 
+
 class SqueezeExciteConv2dNormLeakyReLU(nn.Module):
     def __init__(self, input_shape, num_filters, kernel_size, attention_pooling_type, attention_pooling_size,
                  num_attention_layers, num_attention_filters, attention_network_type, dilation=1, stride=1, groups=1,
@@ -885,13 +886,14 @@ class _DenseBlock(nn.Sequential):
 class DenseNet(nn.Module):
     def __init__(self, input_shape, attention_pooling_type, attention_network_type, attention_pooling_size,
                  num_attention_layers, num_attention_filters, conv_bn_relu_type_bottleneck,
-                 conv_bn_relu_type_processing, growth_rate=12, block_config=(4, 4, 4),
+                 conv_bn_relu_type_processing, multi_image_size, growth_rate=12, block_config=(4, 4, 4),
                  compression=0.5,
                  num_init_feature=24, drop_rate=0, num_classes=10, avgpool_size=8):
         super(DenseNet, self).__init__()
         assert 0 < compression <= 1, 'compression of densenet should be between 0 and 1'
 
         # First Convolution
+        self.multi_image_size = multi_image_size
         x = torch.zeros(input_shape)
         out = x
         self.features = nn.Sequential(OrderedDict([
@@ -925,15 +927,37 @@ class DenseNet(nn.Module):
         self.features.add_module('norm_final', nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features, num_classes)
+        dummy_out = torch.zeros(input_shape[0], num_features+self.multi_image_size)
+        for i in range(2):
+            self.layer_dict['fcc_{}'.format(i)] = nn.Linear(in_features=dummy_out.shape[-1],
+                                                            out_features=self.num_attention_filters)
+            dummy_out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(dummy_out))
+
+        self.layer_dict['fcc_output'] = nn.Linear(in_features=dummy_out.shape[-1],
+                                                  out_features=num_classes)
+
+        self.single_classifier = nn.Linear(num_features, num_classes)
+
+
         self.avgpool_size = avgpool_size
 
-    def forward(self, x):
+    def forward(self, x, x_question):
         features = self.features(x)
         out = F.relu(features, inplace=True)
         out = F.avg_pool2d(out, kernel_size=self.avgpool_size).view(
             features.size(0), -1)
-        out = self.classifier(out)
+
+        if x_question is not None:
+
+            out = torch.cat([out, x_question], dim=1)
+
+            for i in range(2):
+                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+
+            out = self.layer_dict['fcc_output'].forward(out)
+        else:
+            out = self.classifier(out)
+
         return out
 
 # x = torch.ones(100, 100, 3, 28, 28)
