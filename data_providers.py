@@ -784,7 +784,7 @@ class MixedImageCIFAR10(data.Dataset):
         targets_single = target[idx_2]
 
         x_single = img[idx_2]
-        x_single = Image.fromarray(x_single)
+        x_single = transforms.ToPILImage()(x_single)
         # Original images are 32 * 32
         # We just implement num_images_per_input == 4 here
 
@@ -795,31 +795,26 @@ class MixedImageCIFAR10(data.Dataset):
             # apply transform for mixing here
 
             transform = transforms.Compose([
-                transforms.RandomCrop(16),
+                transforms.RandomCrop(24),
                 transforms.ToTensor()
             ])
             image = transform(image)
             images.append(image)
 
-        image_1 = torch.cat((images[0], images[1]), 1)
-        image_2 = torch.cat((images[2], images[3]), 1)
-
-        image_output = torch.cat((image_1, image_2), 2)
-
-        image_output = image_output.numpy().transpose((1, 2, 0))
-
-        image_output = Image.fromarray(image_output.astype('uint8'))
-
+        images = torch.stack(images, dim=0).view(2, -1, images[0].shape[0], images[0].shape[1], images[0].shape[2])
+        images = torch.cat(images.unbind(0), dim=2)
+        images = torch.cat(images.unbind(0), dim=2)
+        x_multi = transforms.ToPILImage()(images)
 
         if self.transform is not None:
-            image_output = self.transform(image_output)
+            x_multi = self.transform(x_multi)
             x_single = self.transform(x_single)
 
         if self.target_transform is not None:
             targets_multi = self.target_transform(targets_multi)
             targets_single = self.target_transform(targets_single)
 
-        return image_output, targets_multi, x_quest, x_single, targets_single
+        return x_multi, targets_multi, x_quest, x_single, targets_single
 
 #x_multi, y_multi, x_quest, x_single, y_single
 
@@ -940,7 +935,7 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
         targets_single = target[idx_2]
 
         x_single = img[idx_2]
-        x_single = Image.fromarray(x_single)
+        x_single = transforms.ToPILImage()(x_single)
 
 
 
@@ -968,15 +963,10 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
             image = transform(image)
             images.append(image)
 
-        image_1 = torch.cat((images[0], images[1]), 1)
-        image_2 = torch.cat((images[2], images[3]), 1)
-
-        image_output = torch.cat((image_1, image_2), 2)
-
-        image_output = image_output.numpy().transpose((1, 2, 0))
-
-        x_multi = Image.fromarray(image_output.astype('uint8'))
-
+        images = torch.stack(images, dim=0).view(2, -1, images[0].shape[0], images[0].shape[1], images[0].shape[2])
+        images = torch.cat(images.unbind(0), dim=2)
+        images = torch.cat(images.unbind(0), dim=2)
+        x_multi = transforms.ToPILImage()(images)
 
         if self.transform is not None:
             x_multi = self.transform(x_multi)
