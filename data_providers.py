@@ -16,6 +16,8 @@ import os
 import os.path
 import numpy as np
 import sys
+import datetime
+
 if sys.version_info[0] == 2:
     import cPickle as pickle
 else:
@@ -753,23 +755,18 @@ class MixedImageCIFAR10(data.Dataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        import datetime
 
-        if index == self.__len__() - 1:
-            indexes = np.arange(0, len(self.data))
-            rng = np.random.RandomState(datetime.datetime.now().second)
-            rng.shuffle(indexes)
-            self.data = self.data[indexes]
 
-        indexes = [i for i in range(index * self.num_images_per_input,
-                                    index * self.num_images_per_input + self.num_images_per_input)]
 
+        rng = np.random.RandomState(datetime.datetime.now().second)
+
+        indexes = rng.randint(low=0, high=len(self), size=self.num_images_per_input)
         img, target = self.data[indexes], self.labels[indexes]
 
         choose_samples_for_tasks = torch.randint(0, self.num_images_per_input, size=(2,))
-        x_single = img[int(choose_samples_for_tasks[0])]
+        x_single = self.data[index]
         x_single = transforms.ToPILImage()(x_single)
-        y_single = target[int(choose_samples_for_tasks[0])]
+        y_single = self.labels[index]
 
         # Original images are 32 * 32
         # We just implement num_images_per_input == 4 here
@@ -807,7 +804,7 @@ class MixedImageCIFAR10(data.Dataset):
         return x_multi, y_multi, x_quest, x_single, y_single
 
     def __len__(self):
-        return int(np.ceil(len(self.data) / self.num_images_per_input))
+        return len(self.data)
 
     def _check_integrity(self):
         root = self.root
@@ -892,23 +889,16 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        import datetime
 
-        if index == self.__len__() - 1:
-            indexes = np.arange(0, len(self.data))
-            rng = np.random.RandomState(datetime.datetime.now().second)
-            rng.shuffle(indexes)
-            self.data = self.data[indexes]
+        rng = np.random.RandomState(datetime.datetime.now().second)
 
-        indexes = [i for i in range(index * self.num_images_per_input,
-                                    index * self.num_images_per_input + self.num_images_per_input)]
-
+        indexes = rng.randint(low=0, high=len(self), size=self.num_images_per_input)
         img, target = self.data[indexes], self.labels[indexes]
 
         choose_samples_for_tasks = torch.randint(0, self.num_images_per_input, size=(2,))
-        x_single = img[int(choose_samples_for_tasks[0])]
+        x_single = self.data[index]
         x_single = transforms.ToPILImage()(x_single)
-        y_single = target[int(choose_samples_for_tasks[0])]
+        y_single = self.labels[index]
 
         # Original images are 32 * 32
         # We just implement num_images_per_input == 4 here
