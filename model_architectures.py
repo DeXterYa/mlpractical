@@ -933,7 +933,10 @@ class DenseNet(nn.Module):
         for i in range(2):
             self.layer_dict['fcc_{}'.format(i)] = nn.Linear(in_features=dummy_out.shape[-1],
                                                             out_features=self.num_attention_filters)
-            dummy_out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(dummy_out))
+            dummy_out = self.layer_dict['fcc_{}'.format(i)].forward(dummy_out)
+            self.layer_dict['fcc_bn_{}'.format(i)] = nn.BatchNorm1d(num_features=dummy_out.shape[1])
+            dummy_out = self.layer_dict['fcc_bn_{}'.format(i)].forward(dummy_out)
+            dummy_out = F.leaky_relu(dummy_out)
 
         self.layer_dict['fcc_output'] = nn.Linear(in_features=dummy_out.shape[-1],
                                                   out_features=num_classes)
@@ -954,7 +957,9 @@ class DenseNet(nn.Module):
             out = torch.cat([out, x_question], dim=1)
 
             for i in range(2):
-                out = F.leaky_relu(self.layer_dict['fcc_{}'.format(i)].forward(out))
+                out = self.layer_dict['fcc_{}'.format(i)].forward(out)
+                out = self.layer_dict['fcc_bn_{}'.format(i)].forward(out)
+                out = F.leaky_relu(out)
 
             out = self.layer_dict['fcc_output'].forward(out)
         else:
