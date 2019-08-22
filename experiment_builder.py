@@ -134,7 +134,7 @@ class ExperimentBuilder(nn.Module):
         multi_image_loss = F.cross_entropy(input=out_multi_image_task, target=y_multi)  # compute loss
         single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
-        mixed_loss = multi_image_loss + single_image_loss
+        mixed_loss = 0.1 * multi_image_loss + 0.9 * single_image_loss
 
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
         mixed_loss.backward()  # backpropagate to compute gradients for current iter loss
@@ -144,7 +144,7 @@ class ExperimentBuilder(nn.Module):
         multi_accuracy = self.compute_accuracy(logits=out_multi_image_task, targets=y_multi)
         single_accuracy = self.compute_accuracy(logits=out_single_image_task, targets=y_single)
 
-        return mixed_loss.data.detach().cpu().numpy(), single_accuracy, multi_accuracy
+        return single_image_loss.data.detach().cpu().numpy(), multi_image_loss.data.detach().cpu().numpy(), mixed_loss.data.detach().cpu().numpy(), single_accuracy, multi_accuracy
 
     def run_evaluation_iter(self, x_single, y_single):
         """
@@ -206,20 +206,22 @@ class ExperimentBuilder(nn.Module):
         Runs experiment train and evaluation iterations, saving the model and best val model and val model accuracy after each epoch
         :return: The summary current_epoch_losses from starting epoch to total_epochs.
         """
-        total_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss": [], "val_acc": [],
+        total_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss_single": [], "train_loss_multi": [], "train_loss_mixed": [], "val_acc": [],
                         "val_loss": [], "curr_epoch": []}  # initialize a dict to keep the per-epoch metrics
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()
-            current_epoch_losses = {"train_acc_single": [],"train_acc_multi": [], "train_loss": [], "val_acc": [], "val_loss": []}
+            current_epoch_losses = {"train_acc_single": [],"train_acc_multi": [], "train_loss_single": [], "train_loss_multi": [], "train_loss_mixed": [], "val_acc": [], "val_loss": []}
 
             with tqdm.tqdm(total=len(self.train_data)) as pbar_train:  # create a progress bar for training
                 for idx, (x_multi, y_multi, x_quest, x_single, y_single) in enumerate(self.train_data):  # get data batches
-                    loss, single_accuracy, multi_accuracy = self.run_train_iter(x_quest, x_multi, x_single, y_multi, y_single)  # take a training iter step
-                    current_epoch_losses["train_loss"].append(loss)  # add current iter loss to the train loss list
+                    single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy = self.run_train_iter(x_quest, x_multi, x_single, y_multi, y_single)  # take a training iter step
+                    current_epoch_losses["train_loss_mixed"].append(loss)  # add current iter loss to the train loss list
+                    current_epoch_losses["train_loss_single"].append(single_image_loss)
+                    current_epoch_losses["train_loss_multi"].append(multi_image_loss)
                     current_epoch_losses["train_acc_single"].append(single_accuracy)  # add current iter acc to the train acc list
                     current_epoch_losses["train_acc_multi"].append(multi_accuracy)
                     pbar_train.update(1)
-                    pbar_train.set_description("loss: {:.4f}, single_accuracy: {:.4f}, multi_accuracy: {:.4f}".format(loss, single_accuracy, multi_accuracy))
+                    pbar_train.set_description("single_loss: {:.4f}, multi_loss: {:.4f}, loss: {:.4f}, single_accuracy: {:.4f}, multi_accuracy: {:.4f}".format(single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy))
 
             with tqdm.tqdm(total=len(self.val_data)) as pbar_val:  # create a progress bar for validation
                 for x, y in self.val_data:  # get data batches
