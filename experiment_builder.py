@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import tqdm
+from arg_extractor import get_args
 
 from storage_utils import save_statistics, save_json_file
 
@@ -29,6 +30,8 @@ class ExperimentBuilder(nn.Module):
         :param continue_from_epoch: An int indicating whether we'll start from scrach (-1) or whether we'll reload a previously saved model of epoch 'continue_from_epoch' and continue training from there.
         """
         super(ExperimentBuilder, self).__init__()
+        args, _ = get_args()
+        self.multi = args.multi
 
         self.experiment_name = experiment_name
         self.model = network_model
@@ -134,7 +137,9 @@ class ExperimentBuilder(nn.Module):
         multi_image_loss = F.cross_entropy(input=out_multi_image_task, target=y_multi)  # compute loss
         single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
 
-        mixed_loss = 0.1 * multi_image_loss + 0.9 * single_image_loss
+
+
+        mixed_loss = self.multi * multi_image_loss + (1.0 - self.multi) * single_image_loss
 
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
         mixed_loss.backward()  # backpropagate to compute gradients for current iter loss

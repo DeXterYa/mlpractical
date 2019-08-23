@@ -757,7 +757,8 @@ class MixedImageCIFAR10(data.Dataset):
         """
 
 
-        time_elapsed = int(datetime.datetime.now().timestamp() * 10 ** 6)
+        time_elapsed = int(datetime.datetime.now().microsecond)
+
         rng = np.random.RandomState(index+time_elapsed)
 
         indexes = rng.randint(low=0, high=len(self), size=self.num_images_per_input)
@@ -890,7 +891,7 @@ class MixedImageCIFAR100(MixedImageCIFAR10):
             tuple: (image, target) where target is index of the target class.
         """
 
-        time_elapsed = int(datetime.datetime.now().timestamp() * 10 ** 6)
+        time_elapsed = int(datetime.datetime.now().microsecond)
         rng = np.random.RandomState(index + time_elapsed)
 
         indexes = rng.randint(low=0, high=len(self), size=self.num_images_per_input)

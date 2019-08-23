@@ -80,6 +80,8 @@ def get_args():
                         help='')
     parser.add_argument('--num_images_per_input', nargs="?", type=int, default=1,
                         help='')
+    parser.add_argument('--multi', nargs="?", type=float, default=0.0,
+                        help='')
 
     args = parser.parse_args()
     gpu_id = str(args.gpu_id)
