@@ -49,6 +49,8 @@ class ExperimentBuilder(nn.Module):
         self.test_data = test_data
         self.optimizer = optim.Adam(self.parameters(), amsgrad=False,
                                     weight_decay=weight_decay_coefficient)
+        self.learning_rate_scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=self.optimizer,
+                                                                            T_max=self.num_epochs, eta_min=0.00001)
         # Generate the directory names
         self.experiment_folder = os.path.abspath(experiment_name)
         print(experiment_name)
@@ -167,9 +169,8 @@ class ExperimentBuilder(nn.Module):
         y_single = y_single.long().to(self.device)
 
         out_single_image_task = self.model.forward(x=x_single,
-                                                      x_question=None)  # forward the data in the model
+                                                   x_question=None)  # forward the data in the model
         single_image_loss = F.cross_entropy(input=out_single_image_task, target=y_single)  # compute loss
-
 
         self.optimizer.zero_grad()  # set all weight grads from previous training iters to 0
 
@@ -211,22 +212,32 @@ class ExperimentBuilder(nn.Module):
         Runs experiment train and evaluation iterations, saving the model and best val model and val model accuracy after each epoch
         :return: The summary current_epoch_losses from starting epoch to total_epochs.
         """
-        total_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss_single": [], "train_loss_multi": [], "train_loss_mixed": [], "val_acc": [],
+        total_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss_single": [], "train_loss_multi": [],
+                        "train_loss_mixed": [], "val_acc": [],
                         "val_loss": [], "curr_epoch": []}  # initialize a dict to keep the per-epoch metrics
         for i, epoch_idx in enumerate(range(self.starting_epoch, self.num_epochs)):
             epoch_start_time = time.time()
-            current_epoch_losses = {"train_acc_single": [],"train_acc_multi": [], "train_loss_single": [], "train_loss_multi": [], "train_loss_mixed": [], "val_acc": [], "val_loss": []}
+            current_epoch_losses = {"train_acc_single": [], "train_acc_multi": [], "train_loss_single": [],
+                                    "train_loss_multi": [], "train_loss_mixed": [], "val_acc": [], "val_loss": []}
 
             with tqdm.tqdm(total=len(self.train_data)) as pbar_train:  # create a progress bar for training
-                for idx, (x_multi, y_multi, x_quest, x_single, y_single) in enumerate(self.train_data):  # get data batches
-                    single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy = self.run_train_iter(x_quest, x_multi, x_single, y_multi, y_single)  # take a training iter step
-                    current_epoch_losses["train_loss_mixed"].append(loss)  # add current iter loss to the train loss list
+                for idx, (x_multi, y_multi, x_quest, x_single, y_single) in enumerate(
+                        self.train_data):  # get data batches
+                    single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy = self.run_train_iter(
+                        x_quest, x_multi, x_single, y_multi, y_single)  # take a training iter step
+                    current_epoch_losses["train_loss_mixed"].append(
+                        loss)  # add current iter loss to the train loss list
                     current_epoch_losses["train_loss_single"].append(single_image_loss)
                     current_epoch_losses["train_loss_multi"].append(multi_image_loss)
-                    current_epoch_losses["train_acc_single"].append(single_accuracy)  # add current iter acc to the train acc list
+                    current_epoch_losses["train_acc_single"].append(
+                        single_accuracy)  # add current iter acc to the train acc list
                     current_epoch_losses["train_acc_multi"].append(multi_accuracy)
                     pbar_train.update(1)
-                    pbar_train.set_description("single_loss: {:.4f}, multi_loss: {:.4f}, loss: {:.4f}, single_accuracy: {:.4f}, multi_accuracy: {:.4f}".format(single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy))
+                    pbar_train.set_description(
+                        "single_loss: {:.4f}, multi_loss: {:.4f}, loss: {:.4f}, single_accuracy: {:.4f}, multi_accuracy: {:.4f}".format(
+                            single_image_loss, multi_image_loss, loss, single_accuracy, multi_accuracy))
+
+            self.learning_rate_scheduler.step(epoch=i)
 
             with tqdm.tqdm(total=len(self.val_data)) as pbar_val:  # create a progress bar for validation
                 for x, y in self.val_data:  # get data batches
