@@ -47,4 +47,4 @@ python train_evaluate_emnist_classification_system.py --batch_size 100 --continu
                                                       --conv_bn_relu_type_bottleneck "Conv2dNormLeakyReLU" \
                                                       --conv_bn_relu_type_processing "Conv2dNormLeakyReLU" \
                                                       --num_images_per_input 4 --multi 0.5\
-                                                      --use_gpu "True" --gpu_id "0" --weight_decay_coefficient 0.001
+                                                      --use_gpu "True" --gpu_id "0,1" --weight_decay_coefficient 0.001
