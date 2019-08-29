@@ -36,7 +36,7 @@ export DATASET_DIR=${TMP}/datasets/
 source /home/${STUDENT_ID}/miniconda3/bin/activate mlp
 cd ..
 
-python train_evaluate_emnist_classification_system.py --batch_size 100 --continue_from_epoch -1 --seed 0 \
+python train_evaluate_emnist_classification_system.py --batch_size 100 --continue_from_epoch -2 --seed 0 \
                                                       --image_num_channels 3 --image_height 32 --image_width 32 \
                                                       --num_epochs 250 --experiment_name "MultiTaskMixedImage_cifar10_multi5_1" \
                                                       --growth_rate 24 --block_config "(5, 5, 5, 5)" --compression 0.5 \
